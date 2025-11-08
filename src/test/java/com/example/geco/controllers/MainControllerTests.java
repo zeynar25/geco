@@ -17,6 +17,7 @@ import com.example.geco.DataUtil;
 import com.example.geco.domains.Account;
 import com.example.geco.domains.Attraction;
 import com.example.geco.domains.UserDetail;
+import com.example.geco.dto.AttractionResponse;
 import com.example.geco.dto.SignupRequest;
 import com.example.geco.repositories.AccountRepository;
 import com.example.geco.repositories.AttractionRepository;
@@ -221,12 +222,10 @@ public class MainControllerTests {
 	}
 	
 	@Test
-	public void canNotAddAttractionWithoutTitle() throws Exception {
-		Attraction attraction = new Attraction();
+	public void cannotAddAttractionWithoutTitle() throws Exception {
+		Attraction attraction = DataUtil.createAttractionA();
 	    attraction.setName(""); // invalid title
-	    attraction.setDescription("This is a valid description with at least 10 characters.");
 	    String attractionJson = objectMapper.writeValueAsString(attraction);
-	    
 	    
 	    mockMvc.perform(
 				MockMvcRequestBuilders.post("/attraction")
@@ -235,15 +234,15 @@ public class MainControllerTests {
 		).andExpect(
 				MockMvcResultMatchers.status().isBadRequest()
 		).andExpect(
-				MockMvcResultMatchers.content().string("Attraction name must have at least 1 character.")
+				MockMvcResultMatchers.jsonPath("$.error").value("Attraction name must have at least 1 character.")
 		);
 	}
 	
 	@Test
-	public void canNotAddAttractionWithoutDescription() throws Exception {
-		Attraction attraction = new Attraction();
-	    attraction.setName("valid title"); // invalid title
-	    attraction.setDescription("too short");
+	public void cannotAddAttractionWithoutDescription() throws Exception {
+		Attraction attraction = DataUtil.createAttractionA();
+	    attraction.setName("valid title"); 
+	    attraction.setDescription("too short"); // invalid description
 	    String attractionJson = objectMapper.writeValueAsString(attraction);
 	    
 	    mockMvc.perform(
@@ -253,14 +252,14 @@ public class MainControllerTests {
 		).andExpect(
 				MockMvcResultMatchers.status().isBadRequest()
 		).andExpect(
-				MockMvcResultMatchers.content().string("Attraction description must be at least 10 characters long.")
+				MockMvcResultMatchers.jsonPath("$.error").value("Attraction description must be at least 10 characters long.")
 		);
 	}
 	
 	@Test
 	public void canGetAttraction() throws Exception {
 		Attraction attractionA = DataUtil.createAttractionA();
-		Attraction savedAttractionA = attractionService.addAttraction(attractionA);
+		AttractionResponse savedAttractionA = attractionService.addAttraction(attractionA);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/attraction/" + savedAttractionA.getAttractionId())
@@ -279,10 +278,10 @@ public class MainControllerTests {
 	@Test
 	public void canGetAllAttraction() throws Exception {
 		Attraction attractionA = DataUtil.createAttractionA();
-		Attraction savedAttractionA = attractionService.addAttraction(attractionA);
+		AttractionResponse savedAttractionA = attractionService.addAttraction(attractionA);
 
 		Attraction attractionB = DataUtil.createAttractionB();
-		Attraction savedAttractionB = attractionService.addAttraction(attractionB);
+		AttractionResponse savedAttractionB = attractionService.addAttraction(attractionB);
 		
 		mockMvc.perform(
                 MockMvcRequestBuilders.get("/attraction")
@@ -303,15 +302,96 @@ public class MainControllerTests {
 		);
 	}
 	
-	// to implement
 	@Test
 	public void canUpdateAttraction() throws Exception {
+		Attraction attractionA = DataUtil.createAttractionA();
+		attractionService.addAttraction(attractionA);
 		
+		attractionA.setName("Ang Ina ng Kalikasan");
+	    String attractionJson = objectMapper.writeValueAsString(attractionA);
+		
+		mockMvc.perform(
+				MockMvcRequestBuilders.patch("/attraction/" + attractionA.getAttractionId())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(attractionJson)
+		).andExpect(
+				MockMvcResultMatchers.status().isOk()
+		).andExpect(
+			MockMvcResultMatchers.jsonPath("$.attractionId").exists()
+		).andExpect(
+				MockMvcResultMatchers.jsonPath("$.name").value(attractionA.getName())
+		).andExpect(
+				MockMvcResultMatchers.jsonPath("$.description").value(attractionA.getDescription())
+		);
+	}
+
+	@Test
+	public void cannotUpdateAttractionWithImproperName() throws Exception {
+		Attraction attractionA = DataUtil.createAttractionA();
+		attractionService.addAttraction(attractionA);
+		
+		attractionA.setName("");
+	    String attractionJson = objectMapper.writeValueAsString(attractionA);
+		
+		mockMvc.perform(
+				MockMvcRequestBuilders.patch("/attraction/" + attractionA.getAttractionId())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(attractionJson)
+		).andExpect(
+				MockMvcResultMatchers.status().isBadRequest()
+		).andExpect(
+			MockMvcResultMatchers.jsonPath("$.error").value("Attraction name must have at least 1 character.")
+		);
+	}
+
+	@Test
+	public void cannotUpdateAttractionWithImproperDescription() throws Exception {
+		Attraction attractionA = DataUtil.createAttractionA();
+		attractionService.addAttraction(attractionA);
+		
+		attractionA.setDescription("too short");
+	    String attractionJson = objectMapper.writeValueAsString(attractionA);
+		
+		mockMvc.perform(
+				MockMvcRequestBuilders.patch("/attraction/" + attractionA.getAttractionId())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(attractionJson)
+		).andExpect(
+				MockMvcResultMatchers.status().isBadRequest()
+		).andExpect(
+			MockMvcResultMatchers.jsonPath("$.error").value("Attraction description must be at least 10 characters long.")
+		);
+	}
+
+	@Test
+	public void canDeleteAttraction() throws Exception {
+		Attraction attractionA = DataUtil.createAttractionA();
+		attractionService.addAttraction(attractionA);
+		
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/attraction/" + attractionA.getAttractionId())
+					.contentType(MediaType.APPLICATION_JSON)
+		).andExpect(
+				MockMvcResultMatchers.status().isOk()
+		).andExpect(
+				MockMvcResultMatchers.jsonPath("$.attractionId").exists()
+		).andExpect(
+				MockMvcResultMatchers.jsonPath("$.name").value(attractionA.getName())
+		).andExpect(
+				MockMvcResultMatchers.jsonPath("$.description").value(attractionA.getDescription())
+		);
 	}
 	
 	@Test
-	public void canDeleteAttraction() throws Exception {
-		
+	public void cannotDeleteAttraction() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/attraction/1")
+					.contentType(MediaType.APPLICATION_JSON)
+		).andExpect(
+				MockMvcResultMatchers.status().isBadRequest()
+		).andExpect(
+				MockMvcResultMatchers.jsonPath("$.error").value("Attraction not found.")
+		);
 	}
 	
 	

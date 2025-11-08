@@ -25,6 +25,7 @@ import com.example.geco.domains.Feedback;
 import com.example.geco.domains.PackageInclusion;
 import com.example.geco.domains.TourPackage;
 import com.example.geco.dto.AccountResponse;
+import com.example.geco.dto.AttractionResponse;
 import com.example.geco.dto.SignupRequest;
 import com.example.geco.services.AccountService;
 import com.example.geco.services.AttractionService;
@@ -137,7 +138,7 @@ public class MainController {
 	@PostMapping("/attraction")
 	public ResponseEntity<?> addAttraction(@RequestBody Attraction attraction) {
 		try {
-	        Attraction savedAttraction = attractionService.addAttraction(attraction);
+	        AttractionResponse savedAttraction = attractionService.addAttraction(attraction);
 	        return new ResponseEntity<>(savedAttraction, HttpStatus.CREATED);
 	        
 	    } catch (IllegalArgumentException e) {
@@ -148,31 +149,51 @@ public class MainController {
 	}
 
 	@GetMapping("/attraction/{id}")
-	public ResponseEntity<Attraction> getAttraction(@PathVariable int id) {
-		Attraction savedAttraction = attractionService.getAttraction(id);
-		if (savedAttraction == null) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(savedAttraction, HttpStatus.OK);
+	public ResponseEntity<?> getAttraction(@PathVariable int id) {
+		try {
+			AttractionResponse savedAttraction = attractionService.getAttraction(id);
+			return new ResponseEntity<>(savedAttraction, HttpStatus.OK);
+			
+		} catch (IllegalArgumentException e) {
+			Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("error", e.getMessage());
+	        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	    }
 	}
 
 	@GetMapping("/attraction")
-	public ResponseEntity<List<Attraction>> getAllAttractions() {
-		List<Attraction> savedAttractions = attractionService.getAllAttractions();
+	public ResponseEntity<List<AttractionResponse>> getAllAttractions() {
+		List<AttractionResponse> savedAttractions = attractionService.getAllAttractions();
 		return new ResponseEntity<>(savedAttractions, HttpStatus.OK);
 	}
 	
-	// to implement
-	@PutMapping("/attraction/{id}")
-	public ResponseEntity<Attraction> updateAttraction(@RequestBody Attraction attraction) {
-		return new ResponseEntity<>(new Attraction(), HttpStatus.OK);
+	@PatchMapping("/attraction/{id}")
+	public ResponseEntity<?> updateAttraction(@PathVariable int id, @RequestBody Attraction attraction) {
+		try {
+	        attraction.setAttractionId(id);
+	        AttractionResponse savedAttraction  = attractionService.updateAttraction(attraction);
+			return new ResponseEntity<>(savedAttraction, HttpStatus.OK);
+			
+		} catch (IllegalArgumentException e) {
+			Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("error", e.getMessage());
+	        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	    }
 	}
 
-	// to implement
 	@DeleteMapping("/attraction/{id}")
-	public ResponseEntity<Attraction> deleteAttraction(@PathVariable int id) {
-		return new ResponseEntity<>(new Attraction(), HttpStatus.OK);
+	public ResponseEntity<?> deleteAttraction(@PathVariable int id) {
+		try {
+			AttractionResponse savedAttraction = attractionService.deleteAttraction(id);
+	        return new ResponseEntity<>(savedAttraction, HttpStatus.OK);
+		
+		} catch (IllegalArgumentException e) {
+			Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("error", e.getMessage());
+	        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	    }
 	}
+	
 	
 	// to implement
 	@PostMapping("/feedback")
