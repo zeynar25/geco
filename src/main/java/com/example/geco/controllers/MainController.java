@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,13 +22,37 @@ import com.example.geco.domains.Faq;
 import com.example.geco.domains.Feedback;
 import com.example.geco.domains.PackageInclusion;
 import com.example.geco.domains.TourPackage;
+import com.example.geco.services.AccountService;
+import com.example.geco.services.AttractionService;
+import com.example.geco.services.BookingService;
+import com.example.geco.services.FeedbackService;
 
 @RestController
 public class MainController {
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private AttractionService attractionService;
+	
+	@Autowired
+	private BookingService bookingService;
+	
+	@Autowired
+	private FeedbackService feedbackService;
+	
 	// Functionalities in home page
 	@GetMapping
 	public HashMap<String, Double> home() {
 		HashMap<String, Double> stats = new HashMap<>();
+		Double attractions = attractionService.getAttractionsNumber();
+		Double monthlyVisitors = bookingService.getAverageVisitor("Month");
+		Double avgRating = feedbackService.getAverageRating();
+		
+		stats.put("attractionsNumber", attractions);
+		stats.put("monthlyVisitors", monthlyVisitors);
+		stats.put("averageRating", avgRating);
+		
         return stats;
     }
 	
@@ -67,10 +92,11 @@ public class MainController {
 		
 	}
 	
-	// to implement
+	// implement error handling
 	@PostMapping("/signup")
 	public ResponseEntity<?> addAccount(@RequestBody Account account) {
-		return new ResponseEntity<>(new Account(), HttpStatus.CREATED);
+		Account savedAccount  = accountService.addAccount(account);
+		return new ResponseEntity<>(savedAccount, HttpStatus.CREATED);
 	}
 	
 	// to implement
