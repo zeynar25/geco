@@ -1,13 +1,13 @@
 package com.example.geco.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.geco.domains.Feedback;
 
 @Repository
-public interface FeedbackRepository  extends CrudRepository<Feedback, Integer>{
+public interface FeedbackRepository  extends JpaRepository<Feedback, Integer>{
 	@Query("SELECT AVG(f.stars) FROM Feedback f")
 	double getAverageStars();
 }

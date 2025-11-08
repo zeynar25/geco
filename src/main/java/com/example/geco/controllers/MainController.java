@@ -26,6 +26,7 @@ import com.example.geco.domains.PackageInclusion;
 import com.example.geco.domains.TourPackage;
 import com.example.geco.dto.AccountResponse;
 import com.example.geco.dto.AttractionResponse;
+import com.example.geco.dto.FeedbackResponse;
 import com.example.geco.dto.SignupRequest;
 import com.example.geco.services.AccountService;
 import com.example.geco.services.AttractionService;
@@ -198,7 +199,15 @@ public class MainController {
 	// to implement
 	@PostMapping("/feedback")
 	public ResponseEntity<?> addFeedback(@RequestBody Feedback feedback) {
-		return new ResponseEntity<>(new Feedback(), HttpStatus.CREATED);
+		try {
+			FeedbackResponse savedFeedback = feedbackService.addFeedback(feedback);
+			return new ResponseEntity<>(savedFeedback, HttpStatus.CREATED);
+	        
+	    } catch (IllegalArgumentException e) {
+	    	Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("error", e.getMessage());
+	        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	    }
 	}
 	
 	// to implement
