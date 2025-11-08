@@ -29,9 +29,9 @@ public class Booking {
 	@JoinColumn(name = "packageId", referencedColumnName = "packageId")
 	private Package tourPackage;
 	
-	@ManyToOne
-	@JoinColumn(name = "discountId", referencedColumnName = "discountId")
-	private Discount discount;
+//	@ManyToOne
+//	@JoinColumn(name = "discountId", referencedColumnName = "discountId")
+//	private Discount discount;
 	
 	private LocalDate visitDate;
 	private LocalTime visitTime;
