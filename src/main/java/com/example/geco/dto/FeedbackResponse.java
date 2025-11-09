@@ -2,6 +2,7 @@ package com.example.geco.dto;
 
 import com.example.geco.domains.Account;
 import com.example.geco.domains.Booking;
+import com.example.geco.domains.FeedbackCategory;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

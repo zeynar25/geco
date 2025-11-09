@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,8 +31,12 @@ public class Feedback {
 	@ManyToOne
     @JoinColumn(name = "booking_id", referencedColumnName = "bookingId")
 	private Booking bookingId;
+
+	// Pertaining to the feedback category this feedback is related to.
+	@OneToOne
+	@JoinColumn(name = "category_id", referencedColumnName = "feedbackCategoryId")
+	private FeedbackCategory category;
 	
-	private String category;
 	private double stars;
 	private String comment;
 	private String suggestion;
