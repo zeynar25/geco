@@ -2,6 +2,7 @@ package com.example.geco;
 
 import com.example.geco.domains.Account;
 import com.example.geco.domains.Attraction;
+import com.example.geco.domains.FeedbackCategory;
 import com.example.geco.domains.UserDetail;
 
 public class DataUtil {
@@ -39,5 +40,17 @@ public class DataUtil {
 		attraction.setDescription("A bridge that is hanging.");
 		
 		return attraction;
+	}
+	
+	public static FeedbackCategory createFeedbackCategoryA() {
+		FeedbackCategory category = new FeedbackCategory();
+		category.setLabel("Facilities");
+		return category;
+	}
+	
+	public static FeedbackCategory createFeedbackCategoryB() {
+		FeedbackCategory category = new FeedbackCategory();
+		category.setLabel("Attractions");
+		return category;
 	}
 }

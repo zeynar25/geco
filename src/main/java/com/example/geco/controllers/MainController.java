@@ -155,32 +155,32 @@ public class MainController {
 	}
 	
 	
-	@PostMapping("/feedback-categories")
+	@PostMapping("/feedback-category")
 	public ResponseEntity<?> addFeedbackCategory(@RequestBody FeedbackCategory category) {
 		FeedbackCategory savedCategory = feedbackService.addCategory(category);
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/feedback-categories/{id}")
+	@GetMapping("/feedback-category/{id}")
 	public ResponseEntity<?> getFeedbackCategory(@PathVariable int id) {
 		FeedbackCategory savedCategory = feedbackService.getCategory(id);
         return new ResponseEntity<>(savedCategory, HttpStatus.OK);
 	}
 	
-	@GetMapping("/feedback-categories")
+	@GetMapping("/feedback-category")
 	public ResponseEntity<List<FeedbackCategory>> getAllFeedbackCategories() {
 		List<FeedbackCategory> categories = feedbackService.getAllCategories();
 		return new ResponseEntity<>(categories, HttpStatus.OK);
 	}
 	
-	@PatchMapping("/feedback-categories")
+	@PatchMapping("/feedback-category/{id}")
 	public ResponseEntity<?> updateFeedbackCategory(@PathVariable int id, @RequestBody FeedbackCategory category) {
 		category.setFeedbackCategoryId(id);
 		FeedbackCategory savedCategory = feedbackService.updateCategory(category);
         return new ResponseEntity<>(savedCategory, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/feedback-categories/{id}")
+	@DeleteMapping("/feedback-category/{id}")
 	public ResponseEntity<?> deleteFeedbackCategory(@PathVariable int id) {
 		FeedbackCategory savedCategory = feedbackService.deleteCategory(id);
         return new ResponseEntity<>(savedCategory, HttpStatus.OK);
