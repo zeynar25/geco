@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountResponse {
+	int accountId;
 	String passwordNotice;
     String surname;
     String firstName;
