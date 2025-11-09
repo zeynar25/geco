@@ -1,0 +1,42 @@
+package com.example.geco.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.example.geco.repositories.AccountRepository;
+import com.example.geco.repositories.AttractionRepository;
+import com.example.geco.repositories.FeedbackCategoryRepository;
+import com.example.geco.repositories.UserDetailRepository;
+import com.example.geco.services.AccountService;
+import com.example.geco.services.AttractionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public abstract class AbstractControllerTest {
+	@Autowired
+	protected MockMvc mockMvc;
+	
+	@Autowired
+	protected ObjectMapper objectMapper;
+	
+	@Autowired
+	protected AccountService accountService;
+	
+	@Autowired
+	protected AttractionService attractionService;
+	
+	@Autowired
+	protected AccountRepository accountRepository;
+	
+	@Autowired
+	protected UserDetailRepository userDetailRepository;
+	
+	@Autowired
+	protected AttractionRepository attractionRepository;
+	
+	@Autowired
+	protected FeedbackCategoryRepository feedbackCategoryRepository;
+}
