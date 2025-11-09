@@ -11,6 +11,8 @@ import com.example.geco.repositories.BookingRepository;
 import com.example.geco.repositories.FeedbackCategoryRepository;
 import com.example.geco.repositories.FeedbackRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class FeedbackService {
 	@Autowired
@@ -25,34 +27,29 @@ public class FeedbackService {
 	@Autowired
 	private BookingRepository bookingRepository;
 	
-	// Check if the account's feedback for that booking already exist.
 	public void validateFeedback(Feedback feedback) {
-	    accountRepository.findById(feedback.getUserId().getUserId())
-	            .orElseThrow(() -> new IllegalArgumentException("Account not found."));
+		if (feedback.getAccount() == null || feedback.getAccount().getAccountId() == null) {
+	        throw new IllegalArgumentException("Account is missing or invalid.");
+	    }
+		
+	    accountRepository.findById(
+	    		feedback.getAccount().getAccountId()
+	    ).orElseThrow(
+	    		() -> new EntityNotFoundException("Account not found.")
+		);
+
+	    if (feedback.getBooking() == null || feedback.getBooking().getBookingId() == null) {
+	        throw new IllegalArgumentException("Booking is missing or invalid.");
+	    }
 
 	    bookingRepository.findById(
-	    		feedback.getBookingId().getBookingId()
+	    		feedback.getBooking().getBookingId()
 	    ).orElseThrow(
-	    		() -> new IllegalArgumentException("Booking not found.")
+	    		() -> new EntityNotFoundException("Booking not found.")
 	    );
 	    
-	    if (feedback.getCategory() == null) {
-	        throw new IllegalArgumentException("Category is null.");
-	    }
-	    
-	    FeedbackCategory existingCategory = feedbackCategoryRepository.findById(
-	    		feedback.getCategory().getFeedbackCategoryId())
-		.orElseThrow(() ->
-				new IllegalArgumentException("Category not found.")
-		);
-	    
-	    String providedLabel = feedback.getCategory().getLabel().trim().toLowerCase();
-	    String actualLabel = existingCategory.getLabel().trim().toLowerCase();
-	    
-	    if (!providedLabel.equals(actualLabel)) {
-	        throw new IllegalArgumentException(
-	            "Category label does not match the stored category name for this ID."
-	        );
+	    if (feedback.getCategory() == null || feedback.getCategory().getFeedbackCategoryId() == null) {
+	        throw new IllegalArgumentException("Category is missing or invalid.");
 	    }
 	    
 	    if (feedback.getStars() < 0 || feedback.getStars() > 5) {
@@ -71,8 +68,8 @@ public class FeedbackService {
 	public FeedbackResponse toResponse(Feedback feedback) {
 		return new FeedbackResponse(
 				feedback.getFeedbackId(),
-				feedback.getUserId(),
-				feedback.getBookingId(),
+				feedback.getAccount(),
+				feedback.getBooking(),
 				feedback.getCategory().getLabel(),
 				feedback.getStars(),
 				feedback.getComment(),
@@ -83,6 +80,27 @@ public class FeedbackService {
 	
 	public FeedbackResponse addFeedback(Feedback feedback) {
 		validateFeedback(feedback);
+		
+		// Check if the account's feedback for that booking already exist.
+		if (feedbackRepository.existsByBooking_BookingId(feedback.getBooking().getBookingId())) {
+			throw new EntityNotFoundException("Feedback for this booking already exist.");
+		}
+		
+		FeedbackCategory existingCategory = feedbackCategoryRepository.findById(
+	    		feedback.getCategory().getFeedbackCategoryId())
+		.orElseThrow(() ->
+				new EntityNotFoundException("Category not found.")
+		);
+		
+	    String providedLabel = feedback.getCategory().getLabel().trim().toLowerCase();
+	    String actualLabel = existingCategory.getLabel().trim().toLowerCase();
+	    
+	    if (!providedLabel.equals(actualLabel)) {
+	        throw new IllegalArgumentException(
+	            "Category label does not match the stored category name for this ID."
+	        );
+	    }
+	    
 		Feedback savedFeedback = feedbackRepository.save(feedback);
 
 	    return toResponse(savedFeedback);

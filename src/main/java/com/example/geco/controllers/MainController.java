@@ -98,45 +98,6 @@ public class MainController extends AbstractController{
 		
 	}
 	
-	@PostMapping("/feedback")
-	public ResponseEntity<?> addFeedback(@RequestBody Feedback feedback) {
-		try {
-			FeedbackResponse savedFeedback = feedbackService.addFeedback(feedback);
-			return new ResponseEntity<>(savedFeedback, HttpStatus.CREATED);
-	        
-	    } catch (IllegalArgumentException e) {
-	    	Map<String, String> errorResponse = new HashMap<>();
-	        errorResponse.put("error", e.getMessage());
-	        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-	    }
-	}
-	
-	// to implement
-	@GetMapping("/feedback/{id}")
-	public ResponseEntity<Feedback> getFeedback(@PathVariable int id) {
-		return new ResponseEntity<>(new Feedback(), HttpStatus.OK);
-	}
-	
-	// to implement
-	@GetMapping("/feedback/{category}/{year}/{month}")
-	public ResponseEntity<List<Feedback>> getFeedbackByCategory(@PathVariable String category, @PathVariable int year, @PathVariable int month) {
-		List<Feedback> feedbacks = new ArrayList();
-		return new ResponseEntity<>(feedbacks, HttpStatus.OK);
-	}
-	
-	// to implement
-	@PatchMapping("/feedback")
-	public ResponseEntity<Feedback> updateFeedback(@RequestBody Feedback feedback) {
-		return new ResponseEntity<>(new Feedback(), HttpStatus.OK);
-	}
-
-	// to implement
-	@DeleteMapping("/feedback/{id}")
-	public ResponseEntity<Feedback> deleteFeedback(@PathVariable int id) {
-		return new ResponseEntity<>(new Feedback(), HttpStatus.OK);
-	}
-	
-	
 	// to implement
 	@PostMapping("/faq")
 	public ResponseEntity<?> addFaq(@RequestBody Faq faq) {
