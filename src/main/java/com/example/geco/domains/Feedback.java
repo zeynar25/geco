@@ -24,7 +24,7 @@ public class Feedback {
 
     // A user can have as many feedback as many as his/her booking.
 	@ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    @JoinColumn(name = "account_id", referencedColumnName = "accountId")
 	private Account account;
 	
 	// Pertaining to the booking this feedback is related to.

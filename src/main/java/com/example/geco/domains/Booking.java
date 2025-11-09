@@ -25,11 +25,11 @@ public class Booking {
 	private Integer bookingId;
 	
 	@ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    @JoinColumn(name = "account_id", referencedColumnName = "accountId")
     private Account account;
 	
 	@ManyToOne
-	@JoinColumn(name = "packageId", referencedColumnName = "packageId")
+	@JoinColumn(name = "package_id", referencedColumnName = "packageId")
 	private TourPackage tourPackage;
 	
 //	@ManyToOne
