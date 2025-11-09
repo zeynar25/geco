@@ -22,6 +22,17 @@ public class AccountService {
 	
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	
+	private AccountResponse toResponse(Account account, UserDetail detail, String censoredPassword) {
+		return new AccountResponse(
+				account.getAccountId(),
+				censoredPassword,
+				detail.getSurname(), 
+				detail.getFirstName(), 
+				detail.getEmail(), 
+				detail.getContactNumber()
+		);
+	}
+	
 	public AccountResponse addAccount(SignupRequest request) {
 		Account account = request.getAccount();
 		UserDetail detail = request.getUserDetail();
@@ -43,20 +54,14 @@ public class AccountService {
 		account.setDetail(savedDetail);
 		accountRepository.save(account);
 		
-		return new AccountResponse(
-				censoredPassword,
-				savedDetail.getSurname(), 
-				savedDetail.getFirstName(), 
-				savedDetail.getEmail(), 
-				savedDetail.getContactNumber()
-		);
+		return toResponse(account, savedDetail, censoredPassword);
 	}
 	
 	public AccountResponse updateAccount(SignupRequest request) {
 		Account account = request.getAccount();
 		UserDetail detail = request.getUserDetail();
 		
-		Account existingAccount = accountRepository.findById(account.getUserId())
+		Account existingAccount = accountRepository.findById(account.getAccountId())
 				.orElseThrow(() -> new IllegalArgumentException("Account not found."));
 
 		// Update password if provided.
@@ -99,12 +104,7 @@ public class AccountService {
 		userDetailRepository.save(existingDetail);
 		accountRepository.save(existingAccount);
 		
-		return new AccountResponse(
-				censoredPassword,
-				existingDetail.getSurname(), 
-				existingDetail.getFirstName(), 
-				existingDetail.getEmail(), 
-				existingDetail.getContactNumber()
-		);
+
+		return toResponse(account, existingDetail, censoredPassword);
 	}
 }
