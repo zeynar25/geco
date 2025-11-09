@@ -1,5 +1,6 @@
 package com.example.geco.domains;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +22,7 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Integer accountId;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "detailId", referencedColumnName = "detailId")
     private UserDetail detail;
 	

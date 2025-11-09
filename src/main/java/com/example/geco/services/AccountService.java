@@ -12,7 +12,11 @@ import com.example.geco.dto.SignupRequest;
 import com.example.geco.repositories.AccountRepository;
 import com.example.geco.repositories.UserDetailRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class AccountService {
 	@Autowired
 	private AccountRepository accountRepository;
@@ -22,20 +26,33 @@ public class AccountService {
 	
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	
-	private AccountResponse toResponse(Account account, UserDetail detail, String censoredPassword) {
-		return new AccountResponse(
-				account.getAccountId(),
-				censoredPassword,
-				detail.getSurname(), 
-				detail.getFirstName(), 
-				detail.getEmail(), 
-				detail.getContactNumber()
-		);
+	private void validateResponse(Account account, UserDetail detail) {
+		if (account == null) {
+			throw new IllegalArgumentException("Account is null.");
+		}
+		
+		if (detail == null) {
+			throw new IllegalArgumentException("Account detail is null.");
+		}
+	}
+	
+	private AccountResponse toResponse(Account account, String censoredPassword) {
+		UserDetail detail = account.getDetail();
+        return new AccountResponse(
+                account.getAccountId(),
+                censoredPassword,
+                detail.getDetailId(),
+                detail.getSurname(),
+                detail.getFirstName(),
+                detail.getEmail(),
+                detail.getContactNumber()
+        );
 	}
 	
 	public AccountResponse addAccount(SignupRequest request) {
 		Account account = request.getAccount();
 		UserDetail detail = request.getUserDetail();
+		validateResponse(account, detail);
 		
 		if (account.getPassword() == null || account.getPassword().trim().length() < 8) {
 		    throw new IllegalArgumentException("Password must have at least 8 characters.");
@@ -54,15 +71,16 @@ public class AccountService {
 		account.setDetail(savedDetail);
 		accountRepository.save(account);
 		
-		return toResponse(account, savedDetail, censoredPassword);
+		return toResponse(account, censoredPassword);
 	}
 	
 	public AccountResponse updateAccount(SignupRequest request) {
 		Account account = request.getAccount();
 		UserDetail detail = request.getUserDetail();
+		validateResponse(account, detail);
 		
 		Account existingAccount = accountRepository.findById(account.getAccountId())
-				.orElseThrow(() -> new IllegalArgumentException("Account not found."));
+				.orElseThrow(() -> new EntityNotFoundException("Account not found."));
 
 		// Update password if provided.
         String censoredPassword = "No changes";
@@ -101,10 +119,9 @@ public class AccountService {
         	existingDetail.setContactNumber(detail.getContactNumber());
         }
 
-		userDetailRepository.save(existingDetail);
 		accountRepository.save(existingAccount);
 		
 
-		return toResponse(account, existingDetail, censoredPassword);
+		return toResponse(existingAccount, censoredPassword);
 	}
 }

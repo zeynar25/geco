@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountResponse {
-	int accountId;
+	Integer accountId;
 	String passwordNotice;
+	
+	Integer detailId;
     String surname;
     String firstName;
     String email;

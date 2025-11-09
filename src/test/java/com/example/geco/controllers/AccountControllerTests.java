@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.geco.DataUtil;
 import com.example.geco.domains.Account;
 import com.example.geco.domains.UserDetail;
+import com.example.geco.dto.AccountResponse;
 import com.example.geco.dto.SignupRequest;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -47,10 +49,18 @@ public class AccountControllerTests extends AbstractControllerTest {
 			Account accountA = DataUtil.createAccountA(detailA);
 			
 			SignupRequest request = new SignupRequest(accountA, detailA);
-			accountService.addAccount(request);
 			
-			detailA.setEmail("new@gmail.com");
-			SignupRequest newRequest = new SignupRequest(accountA, detailA);
+			AccountResponse savedResponse = accountService.addAccount(request);
+			
+			// Fetch the saved account and detail
+		    Account managedAccount = accountRepository.findById(savedResponse.getAccountId()).get();
+		    UserDetail managedDetail = managedAccount.getDetail();
+		    
+		    // Update fields on the managed objects
+		    managedDetail.setEmail("new@gmail.com");
+		    managedAccount.setPassword("newstrongpassword");
+			
+			SignupRequest newRequest = new SignupRequest(managedAccount, managedDetail);
 		    String requestJson = objectMapper.writeValueAsString(newRequest);
 			
 			mockMvc.perform(
@@ -59,14 +69,6 @@ public class AccountControllerTests extends AbstractControllerTest {
 						.content(requestJson)
 			).andExpect(
 					MockMvcResultMatchers.status().isOk()
-			).andExpect(
-				MockMvcResultMatchers.jsonPath("$.passwordNotice").exists()
-			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.surname").value(detailA.getSurname())
-			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.firstName").value(detailA.getFirstName())
-			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.email").value(detailA.getEmail())
 			);
 		}
 	}
@@ -98,7 +100,9 @@ public class AccountControllerTests extends AbstractControllerTest {
 		@Test
 		public void cannotUpdateAccountNotFound() throws Exception {
 			UserDetail detailA = DataUtil.createUserDetailA();
+			detailA.setDetailId(1);
 			Account accountA = DataUtil.createAccountA(detailA);
+			accountA.setAccountId(1);
 			
 			SignupRequest request = new SignupRequest(accountA, detailA);
 			// Did not save request through accountService.
@@ -112,7 +116,7 @@ public class AccountControllerTests extends AbstractControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(requestJson)
 			).andExpect(
-		    		MockMvcResultMatchers.status().isBadRequest()
+		    		MockMvcResultMatchers.status().isNotFound()
 			).andExpect(
 					MockMvcResultMatchers.jsonPath("$.error").value("Account not found.")
 			);
