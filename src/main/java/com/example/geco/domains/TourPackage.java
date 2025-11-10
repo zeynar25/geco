@@ -1,30 +1,38 @@
 package com.example.geco.domains;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.persistence.Id;
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="package")
+@Table(name="tour_package")
 public class TourPackage {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Integer packageId;
-	private Integer pricePerPerson;
 	
-	// String list of package inclusions separated by comma.
-	private String packageInclusions;
-	
-	// Short description about the package.
 	private String description;
 	private Integer basePrice;
+	
+	@ManyToMany
+    @JoinTable(
+        name = "package_inclusion_map",
+        joinColumns = @JoinColumn(name = "package_id"),
+        inverseJoinColumns = @JoinColumn(name = "inclusion_id")
+    )
+    private List<PackageInclusion> inclusions = new ArrayList<>();
 }

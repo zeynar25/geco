@@ -21,4 +21,6 @@ public class PackageInclusion {
 	private Integer inclusionId;
 	private String inclusionName;
 	private Integer inclusionPrice;
+
+    private Integer pricePerPerson;
 }
