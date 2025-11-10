@@ -37,7 +37,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void canGetFaq() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			faqRepository.save(faqA);
+			faqService.addFaq(faqA);
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.get("/faq/" + faqA.getFaqId())
@@ -56,10 +56,10 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void canGetAllFaqs() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			faqRepository.save(faqA);
+			faqService.addFaq(faqA);
 			
 			Faq faqB = DataUtil.createFaqB();
-			faqRepository.save(faqB);
+			faqService.addFaq(faqB);
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.get("/faq")
@@ -96,7 +96,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void canUpdateFaq() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			Faq savedFaqA = faqRepository.save(faqA);
+			Faq savedFaqA = faqService.addFaq(faqA);
 			
 			faqA.setQuestion("New question for the said FAQ.");
 			faqA.setAnswer("New answer for the said FAQ.");
@@ -120,7 +120,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void canUpdateFaqQuestionOnly() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			Faq savedFaqA = faqRepository.save(faqA);
+			Faq savedFaqA = faqService.addFaq(faqA);
 			
 			Faq newFaq = new Faq();
 			newFaq.setQuestion("What is this park all about?");
@@ -144,7 +144,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void canUpdateFaqAnswerOnly() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			Faq savedFaqA = faqRepository.save(faqA);
+			Faq savedFaqA = faqService.addFaq(faqA);
 			
 			Faq newFaq = new Faq();
 			newFaq.setAnswer("New answer for the said question.");
@@ -168,7 +168,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void canDeleteFaq() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			Faq savedFaqA = faqRepository.save(faqA);
+			Faq savedFaqA = faqService.addFaq(faqA);
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.delete("/faq/" + savedFaqA.getFaqId())
@@ -300,7 +300,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void cannotUpdateFaqMissingQuestionAndAnswer() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			Faq savedFaqA = faqRepository.save(faqA);
+			Faq savedFaqA = faqService.addFaq(faqA);;
 
 			Faq newFaq = new Faq();
 			newFaq.setQuestion(null);
@@ -338,10 +338,10 @@ public class FaqControllerTests extends AbstractControllerTest{
 		@Test
 		public void cannotUpdateFaqQuestionAlreadyExist() throws Exception {
 			Faq faqA = DataUtil.createFaqA();
-			Faq savedFaqA = faqRepository.save(faqA);
+			Faq savedFaqA = faqService.addFaq(faqA);
 			
 			Faq faqB = DataUtil.createFaqB();
-			Faq savedFaqB = faqRepository.save(faqB);
+			Faq savedFaqB = faqService.addFaq(faqB);
 			
 			faqA.setQuestion(savedFaqB.getQuestion());
 			String faqJson = objectMapper.writeValueAsString(faqA);

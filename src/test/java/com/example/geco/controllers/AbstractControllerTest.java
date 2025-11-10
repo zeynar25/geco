@@ -9,9 +9,13 @@ import com.example.geco.repositories.AccountRepository;
 import com.example.geco.repositories.AttractionRepository;
 import com.example.geco.repositories.FaqRepository;
 import com.example.geco.repositories.FeedbackCategoryRepository;
+import com.example.geco.repositories.TourPackageRepository;
 import com.example.geco.repositories.UserDetailRepository;
 import com.example.geco.services.AccountService;
 import com.example.geco.services.AttractionService;
+import com.example.geco.services.FaqService;
+import com.example.geco.services.FeedbackCategoryService;
+import com.example.geco.services.TourPackageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -28,6 +32,12 @@ public abstract class AbstractControllerTest {
 	
 	@Autowired
 	protected AttractionService attractionService;
+
+	@Autowired
+	protected FeedbackCategoryService feedbackCategoryService;
+	
+	@Autowired
+	protected FaqService faqService;
 	
 	@Autowired
 	protected AccountRepository accountRepository;

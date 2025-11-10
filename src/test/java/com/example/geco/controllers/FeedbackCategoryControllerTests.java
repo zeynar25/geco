@@ -35,7 +35,7 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 		@Test
 		public void canGetFeedbackCategory() throws Exception {
 			FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			feedbackCategoryRepository.save(categoryA);
+			feedbackCategoryService.addCategory(categoryA);
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.get("/feedback-category/" + categoryA.getFeedbackCategoryId())
@@ -50,10 +50,10 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 		@Test
 		public void canGetAllFeedbackCategories() throws Exception {
 			FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			feedbackCategoryRepository.save(categoryA);
+			feedbackCategoryService.addCategory(categoryA);
 			
 			FeedbackCategory categoryB = DataUtil.createFeedbackCategoryB();
-			feedbackCategoryRepository.save(categoryB);
+			feedbackCategoryService.addCategory(categoryB);
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.get("/feedback-category")
@@ -82,7 +82,7 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 		@Test
 		public void canUpdateFeedbackCategory() throws Exception {
 			FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryRepository.save(categoryA);
+			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
 			
 			categoryA.setLabel("new label");
 			String categoryJson = objectMapper.writeValueAsString(categoryA);
@@ -103,7 +103,7 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 		@Test
 		public void canDeleteFeedbackCategory() throws Exception {
 			FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryRepository.save(categoryA);
+			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.delete("/feedback-category/" + savedCategoryA.getFeedbackCategoryId())
@@ -148,7 +148,7 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 		@Test
 		public void cannotAddFeedbackCategoryAlreadyExist() throws Exception {
 			FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			feedbackCategoryRepository.save(categoryA);
+			feedbackCategoryService.addCategory(categoryA);
 			
 			String attractionJson = objectMapper.writeValueAsString(categoryA);
 			
@@ -200,7 +200,7 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 		@Test
 		public void cannotUpdateFeedbackCategoryImproperLabel() throws Exception {
 			FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryRepository.save(categoryA);
+			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
 			
 			categoryA.setLabel("");
 			String categoryJson = objectMapper.writeValueAsString(categoryA);
