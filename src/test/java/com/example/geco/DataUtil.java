@@ -2,6 +2,7 @@ package com.example.geco;
 
 import com.example.geco.domains.Account;
 import com.example.geco.domains.Attraction;
+import com.example.geco.domains.Faq;
 import com.example.geco.domains.FeedbackCategory;
 import com.example.geco.domains.UserDetail;
 
@@ -52,5 +53,19 @@ public class DataUtil {
 		FeedbackCategory category = new FeedbackCategory();
 		category.setLabel("Attractions");
 		return category;
+	}
+	
+	public static Faq createFaqA() {
+		Faq faq = new Faq();
+		faq.setQuestion("Where is this park located?");
+		faq.setAnswer("It is located inside the Cavite State University Main Campus.");
+		return faq;
+	}
+	
+	public static Faq createFaqB() {
+		Faq faq = new Faq();
+		faq.setQuestion("When does this park open and close?");
+		faq.setAnswer("It is usually open --:--am to 05:00pm every Monday to Thursday.");
+		return faq;
 	}
 }

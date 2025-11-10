@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.geco.repositories.AccountRepository;
 import com.example.geco.repositories.AttractionRepository;
+import com.example.geco.repositories.FaqRepository;
 import com.example.geco.repositories.FeedbackCategoryRepository;
 import com.example.geco.repositories.UserDetailRepository;
 import com.example.geco.services.AccountService;
@@ -39,4 +40,7 @@ public abstract class AbstractControllerTest {
 	
 	@Autowired
 	protected FeedbackCategoryRepository feedbackCategoryRepository;
+	
+	@Autowired
+	protected FaqRepository faqRepository;
 }

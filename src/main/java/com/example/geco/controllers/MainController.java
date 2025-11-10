@@ -3,13 +3,11 @@ package com.example.geco.controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,21 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.geco.domains.Account;
-import com.example.geco.domains.Attraction;
 import com.example.geco.domains.Booking;
-import com.example.geco.domains.Faq;
-import com.example.geco.domains.Feedback;
-import com.example.geco.domains.FeedbackCategory;
 import com.example.geco.domains.PackageInclusion;
 import com.example.geco.domains.TourPackage;
-import com.example.geco.dto.AccountResponse;
-import com.example.geco.dto.AttractionResponse;
-import com.example.geco.dto.FeedbackResponse;
-import com.example.geco.dto.SignupRequest;
-import com.example.geco.services.AccountService;
-import com.example.geco.services.AttractionService;
-import com.example.geco.services.BookingService;
-import com.example.geco.services.FeedbackService;
 
 @RestController
 public class MainController extends AbstractController{
@@ -99,37 +85,6 @@ public class MainController extends AbstractController{
 	}
 	
 	// to implement
-	@PostMapping("/faq")
-	public ResponseEntity<?> addFaq(@RequestBody Faq faq) {
-		return new ResponseEntity<>(new Faq(), HttpStatus.OK);
-	}
-	
-	// to implement
-	@GetMapping("/faq/{id}")
-	public ResponseEntity<Faq> getFaq(@PathVariable int id) {
-		return new ResponseEntity<>(new Faq(), HttpStatus.OK);
-	}
-	
-	// to implement
-	@GetMapping("/faq")
-	public ResponseEntity<List<Faq>> getAllFaqs() {
-		List<Faq> faqs = new ArrayList();
-		return new ResponseEntity<>(faqs, HttpStatus.OK);
-	}
-	
-	// to implement
-	@PutMapping("/faq")
-	public ResponseEntity<Faq> updateFaq(@RequestBody Faq faq) {
-		return new ResponseEntity<>(new Faq(), HttpStatus.OK);
-	}
-
-	// to implement
-	@DeleteMapping("/faq/{id}")
-	public ResponseEntity<Faq> deleteFaq(@PathVariable int id) {
-		return new ResponseEntity<>(new Faq(), HttpStatus.OK);
-	}
-	
-	// to implement
 	@PostMapping("/package")
 	public ResponseEntity<?> addPackage(@RequestBody TourPackage tourPackage) {
 		return new ResponseEntity<>(new TourPackage(), HttpStatus.OK);
@@ -188,7 +143,7 @@ public class MainController extends AbstractController{
 	
 	// to implement
 	@PutMapping("/package-inclusion")
-	public ResponseEntity<PackageInclusion> updatePackageInclusion(@RequestBody PackageInclusion faq) {
+	public ResponseEntity<PackageInclusion> updatePackageInclusion(@RequestBody PackageInclusion inclusion) {
 		return new ResponseEntity<>(new PackageInclusion(), HttpStatus.OK);
 	}
 

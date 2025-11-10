@@ -18,8 +18,7 @@ import jakarta.persistence.Id;
 public class Faq {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
-	private int faqId;
+	private Integer faqId;
 	private String question;
 	private String answer;
-
 }
