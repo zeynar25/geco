@@ -106,19 +106,26 @@ public class AttractionControllerTests extends AbstractControllerTest{
 		@Test
 		public void canDeleteAttraction() throws Exception {
 			Attraction attractionA = DataUtil.createAttractionA();
-			attractionService.addAttraction(attractionA);
+			AttractionResponse savedAttractionA = attractionService.addAttraction(attractionA);
 			
 			mockMvc.perform(
-					MockMvcRequestBuilders.delete("/attraction/" + attractionA.getAttractionId())
+					MockMvcRequestBuilders.delete("/attraction/" + savedAttractionA.getAttractionId())
 						.contentType(MediaType.APPLICATION_JSON)
 			).andExpect(
 					MockMvcResultMatchers.status().isOk()
 			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.attractionId").exists()
+					MockMvcResultMatchers.jsonPath("$.attractionId").value(savedAttractionA.getAttractionId())
 			).andExpect(
 					MockMvcResultMatchers.jsonPath("$.name").value(attractionA.getName())
 			).andExpect(
 					MockMvcResultMatchers.jsonPath("$.description").value(attractionA.getDescription())
+			);
+			
+			mockMvc.perform(
+					MockMvcRequestBuilders.get("/attraction/" + savedAttractionA.getAttractionId())
+						.contentType(MediaType.APPLICATION_JSON)
+			).andExpect(
+					MockMvcResultMatchers.status().isNotFound()
 			);
 		}
 		
@@ -173,6 +180,22 @@ public class AttractionControllerTests extends AbstractControllerTest{
 					MockMvcResultMatchers.jsonPath("$.error").value("Attraction description must be at least 10 characters long.")
 			);
 		}
+		
+		@Test
+		public void cannotGetAttraction() throws Exception {
+			Attraction attractionA = DataUtil.createAttractionA();
+			attractionA.setAttractionId(0);
+
+	        mockMvc.perform(
+	                MockMvcRequestBuilders.get("/attraction/" + attractionA.getAttractionId())
+	                    .contentType(MediaType.APPLICATION_JSON)
+	        )
+	        .andExpect(
+	        		MockMvcResultMatchers.status().isNotFound()
+			).andExpect(
+	        		MockMvcResultMatchers.jsonPath("$.error").value("Attraction not found.")
+			);
+		}
 
 		@Test
 		public void cannotUpdateAttractionImproperName() throws Exception {
@@ -209,6 +232,23 @@ public class AttractionControllerTests extends AbstractControllerTest{
 					MockMvcResultMatchers.status().isBadRequest()
 			).andExpect(
 				MockMvcResultMatchers.jsonPath("$.error").value("Attraction description must be at least 10 characters long.")
+			);
+		}
+		
+		@Test
+		public void cannotUpdateAttractionMissing() throws Exception {
+			Attraction attractionA = DataUtil.createAttractionA();
+			attractionA.setAttractionId(0);
+		    String attractionJson = objectMapper.writeValueAsString(attractionA);
+			
+			mockMvc.perform(
+					MockMvcRequestBuilders.patch("/attraction/" + attractionA.getAttractionId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(attractionJson)
+			).andExpect(
+					MockMvcResultMatchers.status().isNotFound()
+			).andExpect(
+				MockMvcResultMatchers.jsonPath("$.error").value("Attraction not found.")
 			);
 		}
 		

@@ -10,6 +10,8 @@ import com.example.geco.domains.Attraction;
 import com.example.geco.dto.AttractionResponse;
 import com.example.geco.repositories.AttractionRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class AttractionService {
 	@Autowired
@@ -45,7 +47,7 @@ public class AttractionService {
 	
 	public AttractionResponse getAttraction(int id) {
 		Attraction attraction = attractionRepository.findById(id)
-	            .orElseThrow(() -> new IllegalArgumentException("Attraction not found."));
+	            .orElseThrow(() -> new EntityNotFoundException("Attraction not found."));
         return toResponse(attraction);
 	}
 	
@@ -58,7 +60,7 @@ public class AttractionService {
 	
 	public AttractionResponse updateAttraction(Attraction attraction) {
 		Attraction existingAttraction = attractionRepository.findById(attraction.getAttractionId())
-				.orElseThrow(() -> new IllegalArgumentException("Attraction not found."));
+				.orElseThrow(() -> new EntityNotFoundException("Attraction not found."));
 		
 		validateAttraction(attraction);
 		existingAttraction.setName(attraction.getName());
