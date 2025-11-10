@@ -34,7 +34,7 @@ public class TourPackageService {
 	    }
 		
 		if(tourPackage.getInclusions() == null || tourPackage.getInclusions().isEmpty()) {
-	        throw new IllegalArgumentException("Package Inclusions are missing. ");
+	        throw new IllegalArgumentException("Package Inclusions are missing.");
 		}
 		
 		return tourPackageRepository.save(tourPackage);
