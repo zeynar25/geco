@@ -68,6 +68,14 @@ public class AccountControllerTests extends AbstractControllerTest {
 						.content(requestJson)
 			).andExpect(
 					MockMvcResultMatchers.status().isOk()
+			).andExpect(
+					MockMvcResultMatchers.jsonPath("$.passwordNotice").exists()
+			).andExpect(
+					MockMvcResultMatchers.jsonPath("$.surname").value(managedDetail.getSurname())
+			).andExpect(
+					MockMvcResultMatchers.jsonPath("$.firstName").value(managedDetail.getFirstName())
+			).andExpect(
+					MockMvcResultMatchers.jsonPath("$.email").value(managedDetail.getEmail())
 			);
 		}
 	}
