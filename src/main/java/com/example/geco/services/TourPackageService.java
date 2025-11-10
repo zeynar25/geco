@@ -80,6 +80,11 @@ public class TourPackageService {
 		TourPackage tourPackage = tourPackageRepository.findById(id)
 	            .orElseThrow(() -> new EntityNotFoundException("Package with ID \"" + id + "\" not found."));
 	    
+		// Detach inclusions to avoid constraint issues.
+		if (tourPackage.getInclusions() != null) {
+	        tourPackage.getInclusions().clear();
+	    }
+		
 		tourPackageRepository.delete(tourPackage);
 	    return tourPackage;
 	}

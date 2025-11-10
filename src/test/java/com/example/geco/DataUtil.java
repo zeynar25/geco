@@ -89,7 +89,6 @@ public class DataUtil {
 		return inclusion;
 	}
 	
-	
 	public static TourPackage createPackageA(List<PackageInclusion> inclusions) {
 		TourPackage tourPackage = new TourPackage();
 		tourPackage.setDescription("Detailed description about this package.");
