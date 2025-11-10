@@ -20,13 +20,13 @@ import com.example.geco.dto.AttractionResponse;
 @RequestMapping("/attraction")
 public class AttractionController extends AbstractController {
 	@PostMapping
-	public ResponseEntity<?> addAttraction(@RequestBody Attraction attraction) {
+	public ResponseEntity<AttractionResponse> addAttraction(@RequestBody Attraction attraction) {
 		AttractionResponse savedAttraction = attractionService.addAttraction(attraction);
         return new ResponseEntity<>(savedAttraction, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getAttraction(@PathVariable int id) {
+	public ResponseEntity<AttractionResponse> getAttraction(@PathVariable int id) {
 		AttractionResponse attraction = attractionService.getAttraction(id);
 		return new ResponseEntity<>(attraction, HttpStatus.OK);
 	}
@@ -38,14 +38,14 @@ public class AttractionController extends AbstractController {
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateAttraction(@PathVariable int id, @RequestBody Attraction attraction) {
+	public ResponseEntity<AttractionResponse> updateAttraction(@PathVariable int id, @RequestBody Attraction attraction) {
 		attraction.setAttractionId(id);
         AttractionResponse updatedAttraction  = attractionService.updateAttraction(attraction);
 		return new ResponseEntity<>(updatedAttraction, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteAttraction(@PathVariable int id) {
+	public ResponseEntity<AttractionResponse> deleteAttraction(@PathVariable int id) {
 		AttractionResponse deletedAttraction = attractionService.deleteAttraction(id);
         return new ResponseEntity<>(deletedAttraction, HttpStatus.OK);
 	}

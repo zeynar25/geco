@@ -15,13 +15,13 @@ import com.example.geco.dto.SignupRequest;
 @RequestMapping("/account")
 public class AccountController extends AbstractController{
 	@PostMapping
-	public ResponseEntity<?> addAccount(@RequestBody SignupRequest request) {
+	public ResponseEntity<AccountResponse> addAccount(@RequestBody SignupRequest request) {
 		AccountResponse savedAccount  = accountService.addAccount(request);
 		return new ResponseEntity<>(savedAccount, HttpStatus.CREATED);
 	}
 	
 	@PatchMapping
-	public ResponseEntity<?> updateAccount(@RequestBody SignupRequest request) {
+	public ResponseEntity<AccountResponse> updateAccount(@RequestBody SignupRequest request) {
 		AccountResponse savedAccount  = accountService.updateAccount(request);
 		return new ResponseEntity<>(savedAccount, HttpStatus.OK);
 	}

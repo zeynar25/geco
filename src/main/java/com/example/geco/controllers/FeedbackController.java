@@ -20,19 +20,19 @@ import com.example.geco.dto.FeedbackResponse;
 @RequestMapping("/feedback")
 public class FeedbackController extends AbstractController {
 	@PostMapping
-	public ResponseEntity<?> addFeedback(@RequestBody Feedback feedback) {
+	public ResponseEntity<FeedbackResponse> addFeedback(@RequestBody Feedback feedback) {
 		FeedbackResponse savedFeedback = feedbackService.addFeedback(feedback);
 		return new ResponseEntity<>(savedFeedback, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getFeedback(@PathVariable int id) {
+	public ResponseEntity<FeedbackResponse> getFeedback(@PathVariable int id) {
 		FeedbackResponse feedback = feedbackService.getFeedback(id);
 		return new ResponseEntity<>(feedback, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{categoryId}/{year}/{month}")
-	public ResponseEntity<?> getFeedbackByCategory(
+	public ResponseEntity<List<FeedbackResponse>> getFeedbackByCategory(
 			@PathVariable int categoryId, 
 			@PathVariable int year, 
 			@PathVariable int month) {
@@ -43,14 +43,14 @@ public class FeedbackController extends AbstractController {
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateFeedback(@PathVariable int id, @RequestBody Feedback feedback) {
+	public ResponseEntity<FeedbackResponse> updateFeedback(@PathVariable int id, @RequestBody Feedback feedback) {
 		feedback.setFeedbackId(id);
 		FeedbackResponse updatedFeedback = feedbackService.getFeedback(id);
 		return new ResponseEntity<>(updatedFeedback, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteFeedback(@PathVariable int id) {
+	public ResponseEntity<FeedbackResponse> deleteFeedback(@PathVariable int id) {
 		FeedbackResponse deletedFeedback = feedbackService.getFeedback(id);
 		return new ResponseEntity<>(deletedFeedback, HttpStatus.OK);
 	}

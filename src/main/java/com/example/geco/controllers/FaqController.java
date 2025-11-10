@@ -19,19 +19,19 @@ import com.example.geco.domains.Faq;
 @RequestMapping("/faq")
 public class FaqController extends AbstractController {
 	@PostMapping
-	public ResponseEntity<?> addFaq(@RequestBody Faq faq) {
+	public ResponseEntity<Faq> addFaq(@RequestBody Faq faq) {
 		Faq savedFaq = faqService.addFaq(faq);
         return new ResponseEntity<>(savedFaq, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getFaq(@PathVariable int id) {
+	public ResponseEntity<Faq> getFaq(@PathVariable int id) {
 		Faq faq = faqService.getFaq(id);
         return new ResponseEntity<>(faq, HttpStatus.OK);
 	}
 	
 	@GetMapping
-	public ResponseEntity<?> getAllFaqs() {
+	public ResponseEntity<List<Faq>> getAllFaqs() {
 		List<Faq> faqs = faqService.getAllFaqs();
         return new ResponseEntity<>(faqs, HttpStatus.OK);
 	}

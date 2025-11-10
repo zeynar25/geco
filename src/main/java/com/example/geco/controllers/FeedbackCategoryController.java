@@ -19,13 +19,13 @@ import com.example.geco.domains.FeedbackCategory;
 @RequestMapping("/feedback-category")
 public class FeedbackCategoryController extends AbstractController {
 	@PostMapping
-	public ResponseEntity<?> addFeedbackCategory(@RequestBody FeedbackCategory category) {
+	public ResponseEntity<FeedbackCategory> addFeedbackCategory(@RequestBody FeedbackCategory category) {
 		FeedbackCategory savedCategory = feedbackCategoryService.addCategory(category);
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getFeedbackCategory(@PathVariable int id) {
+	public ResponseEntity<FeedbackCategory> getFeedbackCategory(@PathVariable int id) {
 		FeedbackCategory category = feedbackCategoryService.getCategory(id);
         return new ResponseEntity<>(category, HttpStatus.OK);
 	}
@@ -37,14 +37,14 @@ public class FeedbackCategoryController extends AbstractController {
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateFeedbackCategory(@PathVariable int id, @RequestBody FeedbackCategory category) {
+	public ResponseEntity<FeedbackCategory> updateFeedbackCategory(@PathVariable int id, @RequestBody FeedbackCategory category) {
 		category.setFeedbackCategoryId(id);
 		FeedbackCategory updatedCategory = feedbackCategoryService.updateCategory(category);
         return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteFeedbackCategory(@PathVariable int id) {
+	public ResponseEntity<FeedbackCategory> deleteFeedbackCategory(@PathVariable int id) {
 		FeedbackCategory deletedCategory = feedbackCategoryService.deleteCategory(id);
         return new ResponseEntity<>(deletedCategory, HttpStatus.OK);
 	}
