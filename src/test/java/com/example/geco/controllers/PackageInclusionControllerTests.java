@@ -179,13 +179,7 @@ public class PackageInclusionControllerTests extends AbstractControllerTest{
 					MockMvcRequestBuilders.delete("/package-inclusion/" + savedInclusionA.getInclusionId())
 						.contentType(MediaType.APPLICATION_JSON)
 			).andExpect(
-					MockMvcResultMatchers.status().isOk()
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.inclusionId").value(savedInclusionA.getInclusionId())
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.inclusionName").value(savedInclusionA.getInclusionName())
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.inclusionPricePerPerson").value(savedInclusionA.getInclusionPricePerPerson())
+					MockMvcResultMatchers.status().isNoContent()
 			);
 			
 			mockMvc.perform(

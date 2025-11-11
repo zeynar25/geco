@@ -45,7 +45,7 @@ public class PackageInclusionController extends AbstractController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<PackageInclusion> deleteInclusion(@PathVariable int id) {
-		PackageInclusion deletedInclusion = packageInclusionService.deleteInclusion(id);
-        return new ResponseEntity<>(deletedInclusion, HttpStatus.OK);
+		packageInclusionService.deleteInclusion(id);
+	    return ResponseEntity.noContent().build();
 	}
 }

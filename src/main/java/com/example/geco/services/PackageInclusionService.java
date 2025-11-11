@@ -60,11 +60,10 @@ public class PackageInclusionService {
 		return packageInclusionRepository.save(existingInclusion);
 	}
 	
-	public PackageInclusion deleteInclusion(int id) {
+	public void deleteInclusion(int id) {
 		PackageInclusion inclusion = packageInclusionRepository.findById(id)
 	            .orElseThrow(() -> new EntityNotFoundException("Package Inclusion with ID \"" + id + "\" not found."));
 	    
 		packageInclusionRepository.delete(inclusion);
-	    return inclusion;
 	}
 }
