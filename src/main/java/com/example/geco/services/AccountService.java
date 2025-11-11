@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.geco.domains.Account;
 import com.example.geco.domains.UserDetail;
 import com.example.geco.dto.AccountResponse;
+import com.example.geco.dto.DetailRequest;
 import com.example.geco.dto.SignupRequest;
 import com.example.geco.repositories.AccountRepository;
 import com.example.geco.repositories.UserDetailRepository;
@@ -72,6 +73,70 @@ public class AccountService {
 		accountRepository.save(account);
 		
 		return toResponse(account, censoredPassword);
+	}
+	
+	public AccountResponse updatePassword(Account account) {
+		if (account.getAccountId() == null) {
+			throw new IllegalArgumentException("Account ID is null.");
+		}
+		
+		Account existingAccount = accountRepository.findById(account.getAccountId())
+				.orElseThrow(() -> new EntityNotFoundException("Account not found."));
+
+        if (account.getPassword() == null || account.getPassword().trim().length() < 8) {
+            throw new IllegalArgumentException("Password must have at least 8 characters.");
+        }
+		
+		if(passwordEncoder.matches(account.getPassword(), existingAccount.getPassword())) {
+            throw new IllegalArgumentException("This is already your password.");
+		}
+
+		String hashedPassword = passwordEncoder.encode(account.getPassword());
+        existingAccount.setPassword(hashedPassword);
+        
+        accountRepository.save(existingAccount);
+        
+        return toResponse(
+        		existingAccount, "*".repeat(account.getPassword().length())
+        );
+	}
+	
+	public AccountResponse updateDetails(DetailRequest request) {
+		if (request.getAccountId() == null) {
+			throw new IllegalArgumentException("Account ID is null.");
+		}
+			
+		Account existingAccount = accountRepository.findById(request.getAccountId())
+				.orElseThrow(() -> new EntityNotFoundException("Account not found."));
+		
+		UserDetail existingDetail = existingAccount.getDetail();
+		
+        // Update email if provided.
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            if (!request.getEmail().contains("@") || request.getEmail().trim().length() < 5) {
+                throw new IllegalArgumentException("Please include a proper email address.");
+            }
+            existingDetail.setEmail(request.getEmail());
+        }
+
+        // Update surname if provided.
+        if (request.getSurname() != null) {
+        	existingDetail.setSurname(request.getSurname());
+        }
+
+        // Update first name if provided.
+        if (request.getFirstName() != null) {
+        	existingDetail.setFirstName(request.getFirstName());
+        }
+
+        // Update contact number if provided.
+        if (request.getContactNumber() != null) {
+        	existingDetail.setContactNumber(request.getContactNumber());
+        }
+
+		accountRepository.save(existingAccount);
+
+		return toResponse(existingAccount, "No changes made");
 	}
 	
 	public AccountResponse updateAccount(SignupRequest request) {
