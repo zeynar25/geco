@@ -54,7 +54,7 @@ public class FeedbackController extends AbstractController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<FeedbackResponse> deleteFeedback(@PathVariable int id) {
-		FeedbackResponse deletedFeedback = feedbackService.getFeedback(id);
-		return new ResponseEntity<>(deletedFeedback, HttpStatus.OK);
+		feedbackService.deleteFeedback(id);
+	    return ResponseEntity.noContent().build();
 	}
 }

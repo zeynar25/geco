@@ -158,13 +158,11 @@ public class FeedbackService {
 	    return toResponse(feedbackRepository.save(existingFeedback));
 	}
 	
-	public FeedbackResponse deleteFeedback(int id) {
+	public void deleteFeedback(int id) {
 		Feedback feedback = feedbackRepository.findById(id)
 	            .orElseThrow(() -> new EntityNotFoundException("Feedback with ID \"" + id + "\" not found."));
 	    
 		feedbackRepository.delete(feedback);
-		
-	    return toResponse(feedback);
 	}
 	
 	public double getAverageRating() {
