@@ -45,7 +45,7 @@ public class FaqController extends AbstractController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Faq> deleteFaq(@PathVariable int id) {
-		Faq deletedFaq = faqService.deleteFaq(id);
-        return new ResponseEntity<>(deletedFaq, HttpStatus.OK);
+		faqService.deleteFaq(id);
+	    return ResponseEntity.noContent().build();
 	}
 }

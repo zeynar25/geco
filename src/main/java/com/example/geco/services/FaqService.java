@@ -80,11 +80,10 @@ public class FaqService {
 		return faqRepository.save(existingFaq);
 	}
 	
-	public Faq deleteFaq(int id) {
+	public void deleteFaq(int id) {
 		Faq faq = faqRepository.findById(id)
 	            .orElseThrow(() -> new EntityNotFoundException("FAQ with ID \"" + id + "\" not found."));
 	    
 		faqRepository.delete(faq);
-	    return faq;
 	}
 }

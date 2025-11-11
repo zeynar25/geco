@@ -174,13 +174,7 @@ public class FaqControllerTests extends AbstractControllerTest{
 					MockMvcRequestBuilders.delete("/faq/" + savedFaqA.getFaqId())
 						.contentType(MediaType.APPLICATION_JSON)
 			).andExpect(
-					MockMvcResultMatchers.status().isOk()
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.faqId").value(savedFaqA.getFaqId())
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.question").value(savedFaqA.getQuestion())
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.answer").value(savedFaqA.getAnswer())
+					MockMvcResultMatchers.status().isNoContent()
 			);
 			
 			mockMvc.perform(
