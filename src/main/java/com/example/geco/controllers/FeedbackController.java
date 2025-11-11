@@ -1,7 +1,9 @@
 package com.example.geco.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.geco.domains.Feedback;
@@ -31,13 +34,13 @@ public class FeedbackController extends AbstractController {
 		return new ResponseEntity<>(feedback, HttpStatus.OK);
 	}
 	
-	@GetMapping("/{categoryId}/{year}/{month}")
+	@GetMapping
 	public ResponseEntity<List<FeedbackResponse>> getFeedbackByCategory(
-			@PathVariable int categoryId, 
-			@PathVariable int year, 
-			@PathVariable int month) {
+			@RequestParam(required = false) Integer categoryId,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 		
-		List<FeedbackResponse> feedbacks = feedbackService.getFeedbackByCategoryNameAndDate(categoryId, year, month);
+		List<FeedbackResponse> feedbacks = feedbackService.getFeedbackByCategoryAndDateRange(categoryId, startDate, endDate);
 
 	    return new ResponseEntity<>(feedbacks, HttpStatus.OK);
 	}

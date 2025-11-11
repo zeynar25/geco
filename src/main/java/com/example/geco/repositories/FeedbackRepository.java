@@ -19,4 +19,10 @@ public interface FeedbackRepository  extends JpaRepository<Feedback, Integer>{
 	List<Feedback> findByCategory_FeedbackCategoryIdAndBooking_VisitDateBetween(
 			int categoryId, LocalDate startDate, LocalDate endDate
 	);
+	
+	List<Feedback> findByBooking_VisitDateBetween(
+			LocalDate startDate, LocalDate endDate
+	);
+	
+	List<Feedback> findByCategory_FeedbackCategoryId(int id);
 }

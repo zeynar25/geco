@@ -68,7 +68,6 @@ public class FeedbackService {
 	
 	public FeedbackResponse addFeedback(Feedback feedback) {
 		validateFeedback(feedback);
-
 	    
 	    if (feedback.getCategory() == null || feedback.getCategory().getFeedbackCategoryId() == null) {
 	        throw new IllegalArgumentException("Category is missing or invalid.");
@@ -110,18 +109,27 @@ public class FeedbackService {
 	    return toResponse(feedback);
 	}
 	
-	public List<FeedbackResponse> getFeedbackByCategoryNameAndDate(int categoryId, int year, int month) {
-		LocalDate startDate = LocalDate.of(year, month, 1);
-	    LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+	public List<FeedbackResponse> getFeedbackByCategoryAndDateRange(
+	        Integer categoryId, 
+	        LocalDate startDate, 
+	        LocalDate endDate) {
 
-	    List<Feedback> feedbacks = feedbackRepository.findByCategory_FeedbackCategoryIdAndBooking_VisitDateBetween(
-	        categoryId, startDate, endDate
-	    );
+	    List<Feedback> feedbacks;
 
-	    return feedbacks.stream()
-	                    .map(this::toResponse)
-	                    .toList();
+	    if (categoryId == null && startDate == null && endDate == null) {
+	        feedbacks = feedbackRepository.findAll();
+	    } else if (categoryId == null) {
+	        feedbacks = feedbackRepository.findByBooking_VisitDateBetween(startDate, endDate);
+	    } else if (startDate == null && endDate == null) {
+	        feedbacks = feedbackRepository.findByCategory_FeedbackCategoryId(categoryId);
+	    } else {
+	        feedbacks = feedbackRepository.findByCategory_FeedbackCategoryIdAndBooking_VisitDateBetween(
+	                categoryId, startDate, endDate);
+	    }
+
+	    return feedbacks.stream().map(this::toResponse).toList();
 	}
+
 	
 	public FeedbackResponse updateFeedback(Feedback feedback) {
 		validateFeedback(feedback);
