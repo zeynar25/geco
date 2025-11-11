@@ -1,9 +1,14 @@
 package com.example.geco;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.example.geco.domains.Account;
 import com.example.geco.domains.Attraction;
+import com.example.geco.domains.Booking;
+import com.example.geco.domains.Booking.BookingStatus;
+import com.example.geco.domains.BookingInclusion;
 import com.example.geco.domains.Faq;
 import com.example.geco.domains.FeedbackCategory;
 import com.example.geco.domains.PackageInclusion;
@@ -105,5 +110,68 @@ public class DataUtil {
 		tourPackage.setInclusions(inclusions);
 		
 		return tourPackage;
+	}
+	
+	public static BookingInclusion createBookingInclusionA(Booking booking, PackageInclusion packageInclusion) {
+		BookingInclusion bookingInclusion = new BookingInclusion();
+		bookingInclusion.setBooking(booking);
+		bookingInclusion.setInclusion(packageInclusion);
+		bookingInclusion.setQuantity(2);
+		bookingInclusion.setPriceAtBooking(packageInclusion.getInclusionPricePerPerson());
+		
+		return bookingInclusion;
+	}
+	
+	public static BookingInclusion createBookingInclusionB(Booking booking, PackageInclusion packageInclusion) {
+		BookingInclusion bookingInclusion = new BookingInclusion();
+		bookingInclusion.setBooking(booking);
+		bookingInclusion.setInclusion(packageInclusion);
+		bookingInclusion.setQuantity(1);
+		bookingInclusion.setPriceAtBooking(packageInclusion.getInclusionPricePerPerson());
+		
+		return bookingInclusion;
+	}
+	
+
+	public static Booking createBookingA(Account account, TourPackage tourPackage, List<BookingInclusion> inclusions) {
+	    Booking booking = new Booking();
+	    booking.setBookingId(1);
+	    booking.setAccount(account);
+	    booking.setTourPackage(tourPackage);
+	    booking.setInclusions(inclusions);
+	    booking.setVisitDate(LocalDate.now());
+	    booking.setVisitTime(LocalTime.of(10, 30));
+	    booking.setGroupSize(4);
+	    booking.setStatus(BookingStatus.PENDING);
+	    
+	    int inclusionsPrice = 0;
+	    for (BookingInclusion inclusion : inclusions) {
+	    	inclusionsPrice += inclusion.getPriceAtBooking() * inclusion.getQuantity();
+	    }
+	    
+	    booking.setTotalPrice(tourPackage.getBasePrice() + inclusionsPrice);
+
+	    return booking;
+	}
+	
+	public static Booking createBookingB(Account account, TourPackage tourPackage, List<BookingInclusion> inclusions) {
+	    Booking booking = new Booking();
+	    booking.setBookingId(2);
+	    booking.setAccount(account);
+	    booking.setTourPackage(tourPackage);
+	    booking.setInclusions(inclusions);
+	    booking.setVisitDate(LocalDate.now());
+	    booking.setVisitTime(LocalTime.of(10, 30));
+	    booking.setGroupSize(4);
+	    booking.setStatus(BookingStatus.PENDING);
+	    
+	    int inclusionsPrice = 0;
+	    for (BookingInclusion inclusion : inclusions) {
+	    	inclusionsPrice += inclusion.getPriceAtBooking() * inclusion.getQuantity();
+	    }
+	    
+	    booking.setTotalPrice(tourPackage.getBasePrice() + inclusionsPrice);
+
+	    return booking;
 	}
 }

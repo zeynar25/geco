@@ -168,6 +168,7 @@ public class TourPackageControllerTests extends AbstractControllerTest {
 
 			TourPackage newPackage = new TourPackage(
 					savedPackageA.getPackageId(),
+					120,
 					"new description for this package",
 					null,
 					null
@@ -205,6 +206,7 @@ public class TourPackageControllerTests extends AbstractControllerTest {
 
 			TourPackage newPackage = new TourPackage(
 					savedPackageA.getPackageId(),
+					60,
 					null,
 					100,
 					null
