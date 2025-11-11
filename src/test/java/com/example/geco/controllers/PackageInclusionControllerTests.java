@@ -171,7 +171,7 @@ public class PackageInclusionControllerTests extends AbstractControllerTest{
 		}
 
 		@Test
-		public void canDeleteFaq() throws Exception {
+		public void canDeleteInclusion() throws Exception {
 			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
 			PackageInclusion savedInclusionA = packageInclusionService.addInclusion(inclusionA);
 			
@@ -319,7 +319,7 @@ public class PackageInclusionControllerTests extends AbstractControllerTest{
 		}
 
 		@Test
-		public void canDeleteFaq() throws Exception {
+		public void cannotDeleteInclusion() throws Exception {
 			int id = 0;
 			
 			mockMvc.perform(
