@@ -46,7 +46,7 @@ public class AttractionController extends AbstractController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<AttractionResponse> deleteAttraction(@PathVariable int id) {
-		AttractionResponse deletedAttraction = attractionService.deleteAttraction(id);
-        return new ResponseEntity<>(deletedAttraction, HttpStatus.OK);
+		attractionService.deleteAttraction(id);
+	    return ResponseEntity.noContent().build();
 	}
 }

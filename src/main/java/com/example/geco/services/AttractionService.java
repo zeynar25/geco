@@ -73,7 +73,7 @@ public class AttractionService {
 	
 	public AttractionResponse deleteAttraction(int id) {
 		Attraction attraction = attractionRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("Attraction not found."));;
+				.orElseThrow(() -> new EntityNotFoundException("Attraction with ID \""+ id + "\" not found."));
 		
 		attractionRepository.delete(attraction);
 		

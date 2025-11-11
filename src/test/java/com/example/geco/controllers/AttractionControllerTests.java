@@ -112,13 +112,7 @@ public class AttractionControllerTests extends AbstractControllerTest{
 					MockMvcRequestBuilders.delete("/attraction/" + savedAttractionA.getAttractionId())
 						.contentType(MediaType.APPLICATION_JSON)
 			).andExpect(
-					MockMvcResultMatchers.status().isOk()
-			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.attractionId").value(savedAttractionA.getAttractionId())
-			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.name").value(attractionA.getName())
-			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.description").value(attractionA.getDescription())
+					MockMvcResultMatchers.status().isNoContent()
 			);
 			
 			mockMvc.perform(
@@ -254,13 +248,15 @@ public class AttractionControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotDeleteAttraction() throws Exception {
+			int id = 1;
+			
 			mockMvc.perform(
-					MockMvcRequestBuilders.delete("/attraction/1")
+					MockMvcRequestBuilders.delete("/attraction/" + id)
 						.contentType(MediaType.APPLICATION_JSON)
 			).andExpect(
-					MockMvcResultMatchers.status().isBadRequest()
+					MockMvcResultMatchers.status().isNotFound()
 			).andExpect(
-					MockMvcResultMatchers.jsonPath("$.error").value("Attraction not found.")
+					MockMvcResultMatchers.jsonPath("$.error").value("Attraction with ID \""+ id + "\" not found.")
 			);
 		}
 	 
