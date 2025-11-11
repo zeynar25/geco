@@ -46,7 +46,7 @@ public class PackageInclusionService {
 		}
 		
 		PackageInclusion existingInclusion = packageInclusionRepository.findById(inclusion.getInclusionId())
-	            .orElseThrow(() -> new EntityNotFoundException("Package with ID \"" + inclusion.getInclusionId() + "\" not found."));
+	            .orElseThrow(() -> new EntityNotFoundException("Package Inclusion with ID \"" + inclusion.getInclusionId() + "\" not found."));
 		
 
 		if (inclusion.getInclusionName() != null && !inclusion.getInclusionName().trim().isBlank()) {
