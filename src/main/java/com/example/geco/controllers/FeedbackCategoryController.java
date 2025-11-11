@@ -45,7 +45,7 @@ public class FeedbackCategoryController extends AbstractController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<FeedbackCategory> deleteFeedbackCategory(@PathVariable int id) {
-		FeedbackCategory deletedCategory = feedbackCategoryService.deleteCategory(id);
-        return new ResponseEntity<>(deletedCategory, HttpStatus.OK);
+		feedbackCategoryService.deleteCategory(id);
+	    return ResponseEntity.noContent().build();
 	}
 }

@@ -109,11 +109,7 @@ public class FeedbackCategoryControllerTests extends AbstractControllerTest {
 					MockMvcRequestBuilders.delete("/feedback-category/" + savedCategoryA.getFeedbackCategoryId())
 						.contentType(MediaType.APPLICATION_JSON)
 			).andExpect(
-					MockMvcResultMatchers.status().isOk()
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.feedbackCategoryId").exists()
-			).andExpect(
-	        		MockMvcResultMatchers.jsonPath("$.label").value(savedCategoryA.getLabel())
+					MockMvcResultMatchers.status().isNoContent()
 			);
 			
 			mockMvc.perform(

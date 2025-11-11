@@ -65,7 +65,7 @@ public class FeedbackCategoryService {
 		return feedbackCategoryRepository.save(existingCategory);
 	}
 	
-	public FeedbackCategory deleteCategory(int id) {
+	public void deleteCategory(int id) {
 		FeedbackCategory existingCategory = feedbackCategoryRepository.findById(
 				id
 		).orElseThrow(
@@ -73,7 +73,5 @@ public class FeedbackCategoryService {
 		);
 		
 		feedbackCategoryRepository.delete(existingCategory);
-		
-		return existingCategory;
 	}
 }
