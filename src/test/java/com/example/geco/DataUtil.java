@@ -12,6 +12,7 @@ import com.example.geco.domains.Account;
 import com.example.geco.domains.Attraction;
 import com.example.geco.domains.Booking;
 import com.example.geco.domains.Booking.BookingStatus;
+import com.example.geco.dto.AccountResponse;
 import com.example.geco.repositories.AccountRepository;
 import com.example.geco.repositories.AttractionRepository;
 import com.example.geco.repositories.FaqRepository;
@@ -173,63 +174,99 @@ public class DataUtil {
 		return tourPackage;
 	}
 	
-	public static BookingInclusion createBookingInclusionA(Booking booking, PackageInclusion packageInclusion) {
+	public static BookingInclusion createBookingInclusionA(PackageInclusionService packageInclusionService, Booking booking) {
+		PackageInclusion inclusion = DataUtil.createPackageInclusionA();
+		PackageInclusion savedInclusion = packageInclusionService.addInclusion(inclusion);
+		
 		BookingInclusion bookingInclusion = new BookingInclusion();
 		bookingInclusion.setBooking(booking);
-		bookingInclusion.setInclusion(packageInclusion);
+		bookingInclusion.setInclusion(savedInclusion);
 		bookingInclusion.setQuantity(2);
-		bookingInclusion.setPriceAtBooking(packageInclusion.getInclusionPricePerPerson());
+		bookingInclusion.setPriceAtBooking(savedInclusion.getInclusionPricePerPerson());
 		
 		return bookingInclusion;
 	}
 	
-	public static BookingInclusion createBookingInclusionB(Booking booking, PackageInclusion packageInclusion) {
+	public static BookingInclusion createBookingInclusionB(PackageInclusionService packageInclusionService, Booking booking) {
+		PackageInclusion inclusion = DataUtil.createPackageInclusionB();
+		PackageInclusion savedInclusion = packageInclusionService.addInclusion(inclusion);
+		
 		BookingInclusion bookingInclusion = new BookingInclusion();
 		bookingInclusion.setBooking(booking);
-		bookingInclusion.setInclusion(packageInclusion);
+		bookingInclusion.setInclusion(savedInclusion);
 		bookingInclusion.setQuantity(1);
-		bookingInclusion.setPriceAtBooking(packageInclusion.getInclusionPricePerPerson());
+		bookingInclusion.setPriceAtBooking(savedInclusion.getInclusionPricePerPerson());
 		
 		return bookingInclusion;
 	}
 	
 
-	public static Booking createBookingA(Account account, TourPackage tourPackage, List<BookingInclusion> inclusions) {
-	    Booking booking = new Booking();
-	    booking.setAccount(account);
-	    booking.setTourPackage(tourPackage);
-	    booking.setInclusions(inclusions);
+	public static Booking createBookingA(AccountService accountService, 
+			TourPackageService tourPackageService,
+			PackageInclusionService packageInclusionService) {
+		Account account = DataUtil.createAccountA();
+		AccountResponse savedResponse = accountService.addAccount(account);
+		
+		Account savedAccount = accountService.getAccount(savedResponse.getAccountId());
+		
+		TourPackage packageA = DataUtil.createPackageA(packageInclusionService);
+		TourPackage savedPackage = tourPackageService.addPackage(packageA);
+		
+		Booking booking = new Booking();
+	    booking.setAccount(savedAccount);
+	    booking.setTourPackage(savedPackage);
 	    booking.setVisitDate(LocalDate.now().plusDays(3));
 	    booking.setVisitTime(LocalTime.of(9, 30));
 	    booking.setGroupSize(4);
 	    booking.setStatus(BookingStatus.PENDING);
+		
+		BookingInclusion bookingInclusion = DataUtil.createBookingInclusionA(packageInclusionService, booking);
+		List<BookingInclusion> inclusions = new ArrayList<>();
+		inclusions.add(bookingInclusion);
+		
+		booking.setInclusions(inclusions);
 	    
 	    int inclusionsPrice = 0;
 	    for (BookingInclusion inclusion : inclusions) {
 	    	inclusionsPrice += inclusion.getPriceAtBooking() * inclusion.getQuantity();
 	    }
 	    
-	    booking.setTotalPrice(tourPackage.getBasePrice() * booking.getGroupSize() + inclusionsPrice);
+	    booking.setTotalPrice(savedPackage.getBasePrice() * booking.getGroupSize() + inclusionsPrice);
 
 	    return booking;
 	}
 	
-	public static Booking createBookingB(Account account, TourPackage tourPackage, List<BookingInclusion> inclusions) {
-	    Booking booking = new Booking();
-	    booking.setAccount(account);
-	    booking.setTourPackage(tourPackage);
-	    booking.setInclusions(inclusions);
+	public static Booking createBookingB(AccountService accountService, 
+			TourPackageService tourPackageService,
+			PackageInclusionService packageInclusionService) {
+		Account account = DataUtil.createAccountA();
+		AccountResponse savedResponse = accountService.addAccount(account);
+		
+		Account savedAccount = accountService.getAccount(savedResponse.getAccountId());
+		
+		TourPackage packageA = DataUtil.createPackageA(packageInclusionService);
+		TourPackage savedPackage = tourPackageService.addPackage(packageA);
+		
+		Booking booking = new Booking();
+	    booking.setAccount(savedAccount);
+	    booking.setTourPackage(savedPackage);
 	    booking.setVisitDate(LocalDate.now().plusDays(5));
-	    booking.setVisitTime(LocalTime.of(10, 30));
+	    booking.setVisitTime(LocalTime.of(9, 30));
 	    booking.setGroupSize(4);
 	    booking.setStatus(BookingStatus.PENDING);
+		
+		BookingInclusion bookingInclusion = DataUtil.createBookingInclusionB(packageInclusionService, booking);
+		List<BookingInclusion> inclusions = new ArrayList<>();
+		inclusions.add(bookingInclusion);
+		
+		booking.setInclusions(inclusions);
 	    
 	    int inclusionsPrice = 0;
 	    for (BookingInclusion inclusion : inclusions) {
 	    	inclusionsPrice += inclusion.getPriceAtBooking() * inclusion.getQuantity();
 	    }
 	    
-	    booking.setTotalPrice(tourPackage.getBasePrice() * booking.getGroupSize() + inclusionsPrice);
+	    booking.setTotalPrice(savedPackage.getBasePrice() * booking.getGroupSize() + inclusionsPrice);
 
 	    return booking;
 	}

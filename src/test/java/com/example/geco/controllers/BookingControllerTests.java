@@ -13,14 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.geco.DataUtil;
-import com.example.geco.domains.Account;
 import com.example.geco.domains.Booking;
-import com.example.geco.domains.BookingInclusion;
-import com.example.geco.domains.PackageInclusion;
-import com.example.geco.domains.TourPackage;
-import com.example.geco.domains.UserDetail;
-import com.example.geco.dto.AccountResponse;
-import com.example.geco.dto.SignupRequest;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BookingControllerTests extends AbstractControllerTest{
@@ -29,45 +22,10 @@ public class BookingControllerTests extends AbstractControllerTest{
 		@Test
 		public void canAddBooking() throws Exception {
 			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-
-			String bookingJson = objectMapper.writeValueAsString(bookingA);
+			Booking booking = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
+			String bookingJson = objectMapper.writeValueAsString(booking);
 
 			mockMvc.perform(
 			        MockMvcRequestBuilders.post("/booking")
@@ -80,46 +38,10 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void canGetBooking() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
+			Booking booking = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
+		    Booking savedBookingA = bookingService.addBooking(booking);
 		    
 		    mockMvc.perform(
 					MockMvcRequestBuilders.get("/booking/" + savedBookingA.getBookingId())
@@ -147,66 +69,15 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void canGetAllBookings() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * bookingA.getGroupSize());
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-		
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+		    Booking bookingB = DataUtil.createBookingB(accountService, 
+					tourPackageService, 
+					packageInclusionService);
+		    
 		    Booking savedBookingA = bookingService.addBooking(bookingA);
-			
-		    
-		    
-		    // Create Booking B
-		    
-			Booking bookingB = new Booking();
-			bookingB.setAccount(accountA);
-			bookingB.setTourPackage(savedPackageA);
-			bookingB.setVisitDate(LocalDate.now().plusDays(5));
-			bookingB.setVisitTime(LocalTime.of(10, 0));
-			bookingB.setGroupSize(2);
-			bookingB.setStatus(Booking.BookingStatus.PENDING);
-			bookingB.setTotalPrice(savedPackageA.getBasePrice() * bookingB.getGroupSize());
-			
-			BookingInclusion bookingInclusionB = new BookingInclusion();
-			bookingInclusionB.setBooking(bookingB);       
-			bookingInclusionB.setInclusion(inclusionA);
-			bookingInclusionB.setQuantity(1);
-			bookingInclusionB.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			bookingB.setInclusions(List.of(bookingInclusionB));
 		    Booking savedBookingB = bookingService.addBooking(bookingB);
 		    
 		    
@@ -252,66 +123,15 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void canGetAllBookingsWithinFewDays() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
+		    Booking bookingB = DataUtil.createBookingB(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 			
-			
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * bookingA.getGroupSize());
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-		
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
 		    Booking savedBookingA = bookingService.addBooking(bookingA);
-			
-		    
-		    
-		    // Create Booking B
-		    
-			Booking bookingB = new Booking();
-			bookingB.setAccount(accountA);
-			bookingB.setTourPackage(savedPackageA);
-			bookingB.setVisitDate(LocalDate.now().plusDays(5));
-			bookingB.setVisitTime(LocalTime.of(10, 0));
-			bookingB.setGroupSize(2);
-			bookingB.setStatus(Booking.BookingStatus.PENDING);
-			bookingB.setTotalPrice(savedPackageA.getBasePrice() * bookingB.getGroupSize());
-			
-			BookingInclusion bookingInclusionB = new BookingInclusion();
-			bookingInclusionB.setBooking(bookingB);       
-			bookingInclusionB.setInclusion(inclusionA);
-			bookingInclusionB.setQuantity(1);
-			bookingInclusionB.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			bookingB.setInclusions(List.of(bookingInclusionB));
 		    Booking savedBookingB = bookingService.addBooking(bookingB);
 		    
 		    String startDate = LocalDate.now().toString();
@@ -344,49 +164,16 @@ public class BookingControllerTests extends AbstractControllerTest{
 					MockMvcResultMatchers.jsonPath("$.length()").value(2)
 			).andExpect(
 					MockMvcResultMatchers.jsonPath("$[0].bookingId").value(savedBookingA.getBookingId())
+			).andExpect(
+					MockMvcResultMatchers.jsonPath("$[1].bookingId").value(savedBookingB.getBookingId())
 			);
 		}
 		
 		@Test
 		public void canUpdateBooking() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 		    Booking savedBookingA = bookingService.addBooking(bookingA);
 		   
 		    Booking newBooking = new Booking();
@@ -422,44 +209,10 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void canDeleteBooking() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
 		    Booking savedBookingA = bookingService.addBooking(bookingA);
 		    
 		    mockMvc.perform(
@@ -482,44 +235,9 @@ public class BookingControllerTests extends AbstractControllerTest{
     class FailureTests {
 		@Test
 		public void cannotAddBookingMissingAccount() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 
 			bookingA.setAccount(null);
 			String bookingJson = objectMapper.writeValueAsString(bookingA);
@@ -537,44 +255,9 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotAddBookingMissingPackage() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 
 			bookingA.setTourPackage(null);
 			String bookingJson = objectMapper.writeValueAsString(bookingA);
@@ -592,44 +275,9 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotAddBookingMissingVisitDate() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 
 			bookingA.setVisitDate(null);
 			String bookingJson = objectMapper.writeValueAsString(bookingA);
@@ -647,44 +295,9 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotAddBookingMissingVisitTime() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 
 			bookingA.setVisitTime(null);
 			String bookingJson = objectMapper.writeValueAsString(bookingA);
@@ -702,44 +315,9 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotAddBookingMissingGroupSize() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
-			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 
 			bookingA.setGroupSize(null);
 			String bookingJson = objectMapper.writeValueAsString(bookingA);
@@ -757,45 +335,10 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotAddBookingInvalidGroupSize() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusions = new ArrayList<>();
-			inclusions.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusions);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-
 			bookingA.setGroupSize(-1);
 			String bookingJson = objectMapper.writeValueAsString(bookingA);
 
@@ -826,44 +369,10 @@ public class BookingControllerTests extends AbstractControllerTest{
 		
 		@Test
 		public void cannotUpdateBooking() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedResponse.getAccountId());
+			Booking bookingA = DataUtil.createBookingA(accountService, 
+					tourPackageService, 
+					packageInclusionService);
 			
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
 		    Booking savedBookingA = bookingService.addBooking(bookingA);
 		   
 		    Booking newBooking = new Booking();
