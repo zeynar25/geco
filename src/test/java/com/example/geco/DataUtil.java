@@ -271,15 +271,53 @@ public class DataUtil {
 	    return booking;
 	}
 	
-	public static Feedback createFeedbackA(Account account, Booking booking, FeedbackCategory category) {
-		 Feedback feedback = new Feedback();
-		 feedback.setAccount(account);      
-		 feedback.setBooking(booking); 
-		 feedback.setCategory(category); 
-		 feedback.setStars(4.5);           
-		 feedback.setComment("Great experience!"); 
-		 feedback.setSuggestion("Keep the place clean.");
+	public static Feedback createFeedbackA(AccountService accountService, 
+			TourPackageService tourPackageService,
+			PackageInclusionService packageInclusionService,
+			BookingService bookingService,
+			FeedbackCategoryService feedbackCategoryService) {
+		
+		Booking booking = createBookingA(accountService, 
+				tourPackageService, 
+				packageInclusionService);
+		Booking savedBooking = bookingService.addBooking(booking);
+		
+		FeedbackCategory category = createFeedbackCategoryA();
+		FeedbackCategory savedCategory = feedbackCategoryService.addCategory(category);
+		
+		Feedback feedback = new Feedback();
+		feedback.setAccount(booking.getAccount());      
+		feedback.setBooking(savedBooking); 
+		feedback.setCategory(savedCategory); 
+		feedback.setStars(4.5);           
+		feedback.setComment("Great experience!"); 
+		feedback.setSuggestion("Keep the place clean.");
 		 
-		 return feedback;
+		return feedback;
+	}
+	
+	public static Feedback createFeedbackB(AccountService accountService, 
+			TourPackageService tourPackageService,
+			PackageInclusionService packageInclusionService,
+			BookingService bookingService,
+			FeedbackCategoryService feedbackCategoryService) {
+		
+		Booking booking = createBookingB(accountService, 
+				tourPackageService, 
+				packageInclusionService);
+		Booking savedBooking = bookingService.addBooking(booking);
+		
+		FeedbackCategory category = createFeedbackCategoryB();
+		FeedbackCategory savedCategory = feedbackCategoryService.addCategory(category);
+		
+		Feedback feedback = new Feedback();
+		feedback.setAccount(booking.getAccount());      
+		feedback.setBooking(savedBooking); 
+		feedback.setCategory(savedCategory); 
+		feedback.setStars(4.5);           
+		feedback.setComment("Great experience!"); 
+		feedback.setSuggestion("Keep the place clean.");
+		 
+		return feedback;
 	}
 }

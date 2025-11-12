@@ -1,10 +1,5 @@
 package com.example.geco.controllers;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -14,16 +9,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.geco.DataUtil;
 import com.example.geco.domains.Account;
-import com.example.geco.domains.Booking;
-import com.example.geco.domains.BookingInclusion;
 import com.example.geco.domains.Feedback;
 import com.example.geco.domains.FeedbackCategory;
-import com.example.geco.domains.PackageInclusion;
-import com.example.geco.domains.TourPackage;
-import com.example.geco.domains.UserDetail;
-import com.example.geco.dto.AccountResponse;
 import com.example.geco.dto.FeedbackResponse;
-import com.example.geco.dto.SignupRequest;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class FeedbackControllerTests extends AbstractControllerTest {
@@ -31,49 +19,11 @@ public class FeedbackControllerTests extends AbstractControllerTest {
     class SuccessTests {
 		@Test
 		public void canAddFeedback() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+		    Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    
 			String feedbackJson = objectMapper.writeValueAsString(feedbackA);
 			
@@ -102,43 +52,11 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 		
 		@Test
 		public void canGetFeedback() throws Exception {
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-	
-			
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-	
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-	
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+			Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
 		    
 		    mockMvc.perform(
@@ -165,74 +83,20 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 		
 		@Test
 		public void canGetAllFeedbacks() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * bookingA.getGroupSize());
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
+			Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
+		    Feedback feedbackB = DataUtil.createFeedbackB(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
 		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
-		    
-		    
-		    // Create Booking B.
- 			Booking bookingB = new Booking();
- 			bookingB.setAccount(accountA);
- 			bookingB.setTourPackage(savedPackageA);
- 			bookingB.setVisitDate(LocalDate.now().plusDays(5));
- 			bookingB.setVisitTime(LocalTime.of(10, 0));
- 			bookingB.setGroupSize(2);
- 			bookingB.setStatus(Booking.BookingStatus.PENDING);
- 			bookingB.setTotalPrice(savedPackageA.getBasePrice() * bookingB.getGroupSize());
-
- 			BookingInclusion bookingInclusionB = new BookingInclusion();
- 			bookingInclusionB.setBooking(bookingB);       
- 			bookingInclusionB.setInclusion(inclusionA);
- 			bookingInclusionB.setQuantity(2);
- 			bookingInclusionB.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
- 			bookingA.setInclusions(List.of(bookingInclusionA));
- 		    Booking savedBookingB = bookingService.addBooking(bookingB);
- 		    
- 		    Feedback feedbackB = DataUtil.createFeedbackA(accountA ,savedBookingB, savedCategoryA);
  		    FeedbackResponse savedFeedbackB = feedbackService.addFeedback(feedbackB);
-		    
 			
 			mockMvc.perform(
 					MockMvcRequestBuilders.get("/feedback")
@@ -277,49 +141,11 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 		
 		@Test
 		public void canUpdateFeedbackStars() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+			Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
 		    
 		    Feedback newFeedback = new Feedback();
@@ -352,43 +178,11 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 		
 		@Test
 		public void canDeleteFeedback() throws Exception {
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-	
-			
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-	
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-	
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+			Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
 		    
 		    mockMvc.perform(
@@ -413,51 +207,12 @@ public class FeedbackControllerTests extends AbstractControllerTest {
     class FailureTests {
 		@Test
 		public void cannotAddFeedbackNullAccount() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+			Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    feedbackA.setAccount(null);
-		    
 			String feedbackJson = objectMapper.writeValueAsString(feedbackA);
 			
 			mockMvc.perform(
@@ -473,55 +228,16 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 		
 		@Test
 		public void cannotAddFeedbackAccountNotFound() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
+			Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
-		    
-		    UserDetail detailB = DataUtil.createUserDetailB();
-			Account accountB = DataUtil.createAccountA(detailB);
+			Account accountB = DataUtil.createAccountB();
 			accountB.setAccountId(666);
-		    feedbackA.setAccount(accountB);
 		    
+			feedbackA.setAccount(accountB);
 			String feedbackJson = objectMapper.writeValueAsString(feedbackA);
 			
 			mockMvc.perform(
@@ -551,49 +267,11 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 	    
 	    @Test
 		public void cannotUpdateFeedbackMissingFields() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+	    	Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
 		    
 		    Feedback newFeedback = new Feedback();
@@ -612,50 +290,12 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 	    
 	    @Test
 		public void cannotUpdateFeedbackNotFound() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
-		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
+	    	Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
+		    feedbackService.addFeedback(feedbackA);
 		    
 		    Feedback newFeedback = new Feedback();
 		    newFeedback.setStars(0.0);
@@ -675,49 +315,11 @@ public class FeedbackControllerTests extends AbstractControllerTest {
 	    
 	    @Test
 		public void cannotUpdateFeedbackInvalidCategory() throws Exception {
-			// Save an account to the database.
-			UserDetail detailA = DataUtil.createUserDetailA();
-			Account accountA = DataUtil.createAccountA(detailA);
-			SignupRequest request = new SignupRequest(accountA, detailA);
-			AccountResponse savedAccountResponse = accountService.addAccount(request);
-			accountA.setAccountId(savedAccountResponse.getAccountId());
-			
-			// Save packageInclusion to the database.
-			PackageInclusion inclusionA = DataUtil.createPackageInclusionA();
-			packageInclusionService.addInclusion(inclusionA);
-			List<PackageInclusion> inclusionsA = new ArrayList<>();
-			inclusionsA.add(inclusionA);
-
-			
-			// Save tourPackage to the database.
-			TourPackage packageA = DataUtil.createPackageA(inclusionsA);
-			TourPackage savedPackageA = tourPackageService.addPackage(packageA);
-			
-			// Create Booking A.
-			Booking bookingA = new Booking();
-			bookingA.setAccount(accountA);
-			bookingA.setTourPackage(savedPackageA);
-			bookingA.setVisitDate(LocalDate.now().plusDays(3));
-			bookingA.setVisitTime(LocalTime.of(10, 0));
-			bookingA.setGroupSize(2);
-			bookingA.setStatus(Booking.BookingStatus.PENDING);
-			bookingA.setTotalPrice(savedPackageA.getBasePrice() * 2);
-
-			// Create BookingInclusion and link to bookingA.
-			BookingInclusion bookingInclusionA = new BookingInclusion();
-			bookingInclusionA.setBooking(bookingA);       
-			bookingInclusionA.setInclusion(inclusionA);
-			bookingInclusionA.setQuantity(2);
-			bookingInclusionA.setPriceAtBooking(inclusionA.getInclusionPricePerPerson());
-
-			// Set inclusions in booking.
-			bookingA.setInclusions(List.of(bookingInclusionA));
-		    Booking savedBookingA = bookingService.addBooking(bookingA);
-		    
-		    FeedbackCategory categoryA = DataUtil.createFeedbackCategoryA();
-			FeedbackCategory savedCategoryA = feedbackCategoryService.addCategory(categoryA);
-		    
-		    Feedback feedbackA = DataUtil.createFeedbackA(accountA ,savedBookingA, savedCategoryA);
+	    	Feedback feedbackA = DataUtil.createFeedbackA(accountService, 
+					tourPackageService, 
+					packageInclusionService,
+					bookingService,
+					feedbackCategoryService);
 		    FeedbackResponse savedFeedbackA = feedbackService.addFeedback(feedbackA);
 		    
 		    Feedback newFeedback = new Feedback();
