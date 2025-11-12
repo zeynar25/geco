@@ -9,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.example.geco.AbstractControllerTest;
 import com.example.geco.DataUtil;
 import com.example.geco.domains.Booking;
 
