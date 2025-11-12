@@ -1,8 +1,5 @@
 package com.example.geco.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -11,7 +8,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.geco.DataUtil;
-import com.example.geco.domains.PackageInclusion;
 import com.example.geco.domains.TourPackage;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
