@@ -1,13 +1,32 @@
 package com.example.geco;
 
 import java.time.LocalDate;
+
 import java.time.LocalTime;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.geco.domains.Account;
 import com.example.geco.domains.Attraction;
 import com.example.geco.domains.Booking;
 import com.example.geco.domains.Booking.BookingStatus;
+import com.example.geco.repositories.AccountRepository;
+import com.example.geco.repositories.AttractionRepository;
+import com.example.geco.repositories.FaqRepository;
+import com.example.geco.repositories.FeedbackCategoryRepository;
+import com.example.geco.repositories.PackageInclusionRepository;
+import com.example.geco.repositories.TourPackageRepository;
+import com.example.geco.repositories.UserDetailRepository;
+import com.example.geco.services.AccountService;
+import com.example.geco.services.AttractionService;
+import com.example.geco.services.BookingInclusionService;
+import com.example.geco.services.BookingService;
+import com.example.geco.services.FaqService;
+import com.example.geco.services.FeedbackCategoryService;
+import com.example.geco.services.FeedbackService;
+import com.example.geco.services.PackageInclusionService;
+import com.example.geco.services.TourPackageService;
 import com.example.geco.domains.BookingInclusion;
 import com.example.geco.domains.Faq;
 import com.example.geco.domains.Feedback;
@@ -17,13 +36,35 @@ import com.example.geco.domains.TourPackage;
 import com.example.geco.domains.UserDetail;
 
 public class DataUtil {
-	public static Account createAccountA(UserDetail detail) {
-		Account account = new Account();
-		account.setPassword("1234567890");
-		account.setDetail(detail);
-		
-		return account;
-	}
+	@Autowired
+	protected AccountService accountService;
+	
+	@Autowired
+	protected AttractionService attractionService;
+
+	@Autowired
+	protected FeedbackCategoryService feedbackCategoryService;
+	
+	@Autowired
+	protected FaqService faqService;
+
+	@Autowired
+	protected TourPackageService tourPackageService;
+	
+	@Autowired
+	protected PackageInclusionService packageInclusionService;
+	
+	@Autowired
+	protected BookingService bookingService;
+	
+	@Autowired
+	protected BookingInclusionService bookingInclusionService;
+	
+	@Autowired
+	protected FeedbackService feedbackService;
+	
+	@Autowired
+	protected AccountRepository accountRepository;
 	
 	public static UserDetail createUserDetailA() {
 		UserDetail detail = new UserDetail();
@@ -43,6 +84,26 @@ public class DataUtil {
 		detail.setEmail("daniellalyn.soliman@cvsu.edu.ph");
 		
 		return detail;
+	}
+
+	public static Account createAccountA() {
+		UserDetail detail = createUserDetailA();
+		
+		Account account = new Account();
+		account.setPassword("1234567890");
+		account.setDetail(detail);
+		
+		return account;
+	}
+	
+	public static Account createAccountB() {
+		UserDetail detail = createUserDetailB();
+		
+		Account account = new Account();
+		account.setPassword("1234567890");
+		account.setDetail(detail);
+		
+		return account;
 	}
 	
 	public static Attraction createAttractionA() {
